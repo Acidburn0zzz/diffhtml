@@ -7,7 +7,6 @@ module.exports = ->
   env = process.env
 
   chrome = 'echo Skipping Chrome'
-  python2 = 'echo Skipping Python2'
   s3 = 'echo Skipping S3'
 
   # https://code.google.com/p/selenium/wiki/ChromeDriver#Requirements
@@ -20,9 +19,6 @@ module.exports = ->
 
     if not fs.existsSync chrome
       chrome = '"' + 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe' + '"'
-
-  if process.platform is 'linux'
-    python2 = 'cd build/tools ; grep -Rl python . | xargs sed -ri "s/([^!]|^)python(\\s|$)/\\1python2\\2/g"'
 
   # Only run the s3 task if Travis is building master and not in a pull
   # request.
@@ -37,9 +33,6 @@ module.exports = ->
         '--pack-extension-key=' + path.resolve('chrome-extension/key.pem')
         '--no-message-box'
       ].join(' ')
-
-    'python2':
-      command: python2
 
     's3':
       command: s3

@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <title>diffHTML Demo</title>
+</head>
+
+<body>
+  <main></main>
+
+  <script src="../node_modules/diffhtml/dist/diffhtml.js"></script>
+  <script>
+    const pollForFunction = () => new Promise(resolve => {
+      if (window.__diffHTMLDevTools) {
+        resolve(window.__diffHTMLDevTools);
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+          if (window.__diffHTMLDevTools) {
+            resolve(window.__diffHTMLDevTools);
+          }
+        }, 240);
+      });
+    });
+
+    const cacheTask = [];
+
+    function devTools() {
+      let extension = null;
+
+      const poller = pollForFunction().then(devToolsExtension => {
+        extension = devToolsExtension().activate();
+
+        if (cacheTask.length) {
+          cacheTask.forEach(cb => cb());
+          cacheTask.length = 0;
+        }
+      });
+
+      return ({ node, newHTML, options }) => ({ oldTree, newTree }) => {
+        return ({ patches, promises }) => () => {
+          const start = () => extension.startTransaction(Date.now(), {
+            node, newHTML, options, oldTree, newTree,
+          });
+
+          if (!extension) { cacheTask.push(start); } else { start(); }
+
+          const stop = () => extension.endTransaction(Date.now(), {
+            patches, promises, 
+          });
+
+          if (!extension) {
+            cacheTask.push(stop);
+          }
+          else {
+            stop();
+          }
+        };
+      };
+    }
+  </script>
+  <script>
+    const { use, html, innerHTML } = diff;
+
+    use(devTools());
+
+    const animate = (el, ...args) => new Promise(resolve => el.animate(
+      ...args
+    ).onfinish = () => resolve());
+
+    const attached = el => animate(el, [{ opacity: 0 }, { opacity: 1 }], {
+      duration: 1000,
+    });
+
+    const render = () => {
+      innerHTML(document.querySelector('main'), html`
+        <div attached=${attached}>${new Date().toLocaleString()}</div>
+      `)
+
+      return render;
+    };
+
+    setInterval(render(), 1000);
+  </script>
+</body>
+</html>

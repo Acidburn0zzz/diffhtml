@@ -8,15 +8,20 @@
     "https://*/*"
   ],
   "background": {
-    "scripts": ["js/background.js"]
+    "scripts": ["scripts/background.js"]
   },
   "content_scripts": [{
     "matches": ["<all_urls>", "*://*/*", "http://*/*", "https://*/*"],
-    "js": ["js/contentscript.js"],
+    "js": ["scripts/contentscript.js"],
     "run_at": "document_start"
   }],
   "web_accessible_resources": [
-    "js/**/*",
+    "scripts/*",
+    "scripts/**/*",
+    "styles/*",
+    "styles/**/*",
+    "node_modules/**/*",
+    "markup/*",
     "markup/**/*"
   ],
   "devtools_page": "markup/devtools.html",

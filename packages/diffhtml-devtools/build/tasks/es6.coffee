@@ -22,7 +22,6 @@ module.exports = ->
       path: 'shared/scripts'
       module: 'background'
       chrome: 'js/background.js'
-      firefox: '../lib/main.js'
 
     # ContentScript.
     buildES6
@@ -30,7 +29,6 @@ module.exports = ->
       path: 'shared/scripts'
       module: 'contentscript'
       chrome: 'js/contentscript.js'
-      firefox: 'js/contentscript.js'
 
     # Devtools.
     buildES6
@@ -38,4 +36,10 @@ module.exports = ->
       path: 'shared/scripts'
       module: 'devtools'
       chrome: 'js/devtools.js'
-      firefox: 'js/devtools.js'
+
+    # Panel.
+    buildES6
+      target: target
+      path: 'shared/scripts'
+      module: 'panel'
+      chrome: 'js/panel.js'

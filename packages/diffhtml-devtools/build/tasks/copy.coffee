@@ -4,7 +4,7 @@ module.exports = ->
   chromeDest = 'chrome-extension/dist/extension'
 
   npmDeps = [
-    #'node_modules/bocoup-toolbar/dist/toolbar.js'
+    'node_modules/diffhtml/dist/diffhtml.js'
   ]
 
   @config 'copy',
