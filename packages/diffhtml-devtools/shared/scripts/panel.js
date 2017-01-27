@@ -1,5 +1,7 @@
-const { release, outerHTML, html } = diff;
+const { release, innerHTML, html, use } = diff;
 const background = chrome.runtime.connect({ name: 'devtools-page' });
+
+use(logger());
 
 // Relay the tab ID to the background page
 background.postMessage({
@@ -13,28 +15,38 @@ const initialState = {
   completed: [],
 };
 
-const { assign } = Object;
 const reactiveBinding = f => ({ set(t, p, v) { t[p] = v; f(); return !0; } });
 const state = new Proxy(initialState, reactiveBinding(() => render()));
 
-const render = () => outerHTML(document.body, html`
-  <body>
-    <h1>diffHTML Found and Activated</h1>
+const render = () => innerHTML(document.body, html`
+  <devtools-split-view>
+    <devtools-navigation></devtools-navigation>
 
-    <devtools-panel>
-      <div class="completed_transactions">
-        ${state.completed.map((transaction, i) => html`
-          <div>Completed transaction ${i + 1}</div>
-        `)}
+    <devtools-panel id="transactions">
+      <div>
+        <h1>In Progress</h1>
+
+        ${state.inProgress
+          .filter(Boolean)
+          .map(transaction => html`<devtools-transaction-row
+            stateName="inProgress"
+            transaction=${transaction}
+          />`)}
       </div>
 
-      <div class="in_progress_transactions">
-        ${state.inProgress.map((transaction, i) => html`
-          <div>In Progress transaction ${i + 1}</div>
-        `)}
+      <div>
+        <h1>Completed</h1>
+
+        ${state.completed
+          .filter(Boolean)
+          .map(transaction => html`<devtools-transaction-row
+            stateName="completed"
+            transaction=${transaction}
+          />`)}
       </div>
     </devtools-panel>
-  </body>
+
+  </devtools-split-view>
 `);
 
 background.onMessage.addListener(function(message) {
@@ -51,7 +63,7 @@ background.onMessage.addListener(function(message) {
     }
 
     case 'end': {
-      state.completed = state.completed.concat(state.inProgress.shift());
+      //state.completed = state.completed.concat(state.inProgress.shift());
       break;
     }
   }

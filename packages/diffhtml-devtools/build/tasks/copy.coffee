@@ -5,6 +5,8 @@ module.exports = ->
 
   npmDeps = [
     'node_modules/diffhtml/dist/diffhtml.js'
+    'node_modules/diffhtml-logger/dist/logger.js'
+    'node_modules/diffhtml-components/index.js'
   ]
 
   @config 'copy',

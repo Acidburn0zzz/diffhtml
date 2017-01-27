@@ -24,7 +24,7 @@ window.__diffHTMLDevTools = () => {
     endTransaction(endDate, args={}) {
       triggerEvent('end', { endDate, args });
       return state;
-    }
+    },
   };
 
   return state;

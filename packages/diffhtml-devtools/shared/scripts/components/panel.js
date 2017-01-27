@@ -1,7 +1,23 @@
-class DevtoolsPanel extends ReactiveElement {
+class DevtoolsPanel extends WebComponent([]) {
   render() {
     return diff.html`
-      <div class="widget vbox panel">
+      <style>
+        :host {
+          display: flex;
+          flex: auto;
+          position: relative;
+          background-color: #FFFFFF;
+        }
+
+        .panel {
+          box-sizing: border-box;
+          display: flex;
+          flex: 1;
+          flex-direction: column;
+        }
+      </style>
+
+      <div class="panel">
         <slot></slot>
       </div>
     `;

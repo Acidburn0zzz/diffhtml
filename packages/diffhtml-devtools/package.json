@@ -1,6 +1,7 @@
 {
   "name": "diffhtml-devtools",
   "private": true,
+  "main": "module/devtools.js",
   "scripts": {
     "grunt": "grunt",
     "watch": "grunt default watch",

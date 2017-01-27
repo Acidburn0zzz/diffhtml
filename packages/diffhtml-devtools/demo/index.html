@@ -11,57 +11,7 @@
   <main></main>
 
   <script src="../node_modules/diffhtml/dist/diffhtml.js"></script>
-  <script>
-    const pollForFunction = () => new Promise(resolve => {
-      if (window.__diffHTMLDevTools) {
-        resolve(window.__diffHTMLDevTools);
-      }
-
-      document.addEventListener('DOMContentLoaded', () => {
-        setTimeout(() => {
-          if (window.__diffHTMLDevTools) {
-            resolve(window.__diffHTMLDevTools);
-          }
-        }, 240);
-      });
-    });
-
-    const cacheTask = [];
-
-    function devTools() {
-      let extension = null;
-
-      const poller = pollForFunction().then(devToolsExtension => {
-        extension = devToolsExtension().activate();
-
-        if (cacheTask.length) {
-          cacheTask.forEach(cb => cb());
-          cacheTask.length = 0;
-        }
-      });
-
-      return ({ node, newHTML, options }) => ({ oldTree, newTree }) => {
-        return ({ patches, promises }) => () => {
-          const start = () => extension.startTransaction(Date.now(), {
-            node, newHTML, options, oldTree, newTree,
-          });
-
-          if (!extension) { cacheTask.push(start); } else { start(); }
-
-          const stop = () => extension.endTransaction(Date.now(), {
-            patches, promises, 
-          });
-
-          if (!extension) {
-            cacheTask.push(stop);
-          }
-          else {
-            stop();
-          }
-        };
-      };
-    }
-  </script>
+  <script src="../module/devtools.js"></script>
   <script>
     const { use, html, innerHTML } = diff;
 

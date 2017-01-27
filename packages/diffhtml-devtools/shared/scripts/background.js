@@ -5,7 +5,7 @@ const savedRequests = [];
 
 chrome.runtime.onConnect.addListener(port => {
   if (port.name === 'devtools-page') {
-    function devToolsListener(message, sender, sendResponse) {
+    const devToolsListener = function(message, sender, sendResponse) {
       connections.set(message.tabId, port);
 
       savedRequests.forEach(function([id, request]) {
@@ -17,7 +17,7 @@ chrome.runtime.onConnect.addListener(port => {
           file: message.scriptToInject,
         });
       }
-    }
+    };
 
     savedRequests.length = 0;
 

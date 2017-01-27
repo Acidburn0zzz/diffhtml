@@ -14,7 +14,6 @@
   });
 
   document.addEventListener('diffHTML:start', ev => {
-    console.log('Content Script :: Start transaction');
     postMessage(JSON.parse(ev.detail));
   });
 
