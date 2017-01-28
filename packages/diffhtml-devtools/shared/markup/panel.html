@@ -6,20 +6,23 @@
   <body>
     <h1 id="not-found">&lt;/&gt; diffHTML middleware was <span class="not">not</span> found</h1>
 
-    <!--
-    <h1 class="retry"><button>&#x21bb;</button></h1>
-    -->
-
+    <!-- Libs -->
     <script src="../node_modules/diffhtml/dist/diffhtml.js"></script>
     <script src="../node_modules/diffhtml-logger/dist/logger.js"></script>
-    <script src="../node_modules/diffhtml-components/index.js"></script>
+    <script src="../node_modules/diffhtml-components/dist/components.js"></script>
+    <script src="../node_modules/diffhtml-synthetic-events/dist/synthetic-events.js"></script>
 
     <!-- Components -->
-    <script src="../scripts/components/panel.js"></script>
+    <script src="../scripts/components/panels.js"></script>
+    <script src="../scripts/components/header.js"></script>
     <script src="../scripts/components/split-view.js"></script>
     <script src="../scripts/components/navigation.js"></script>
     <script src="../scripts/components/transaction-row.js"></script>
 
+    <!-- Panels -->
+    <script src="../scripts/panels/transactions.js"></script>
+
+    <!-- Main entry -->
     <script src="../scripts/panel.js"></script>
   </body>
 </html>

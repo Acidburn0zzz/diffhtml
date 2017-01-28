@@ -1,12 +1,13 @@
-class DevtoolsPanel extends WebComponent([]) {
+class DevtoolsPanels extends WebComponent([]) {
   render() {
-    return diff.html`
+    return html`
       <style>
         :host {
           display: flex;
           flex: auto;
           position: relative;
           background-color: #FFFFFF;
+          overflow-y: auto;
         }
 
         .panel {
@@ -24,4 +25,4 @@ class DevtoolsPanel extends WebComponent([]) {
   }
 }
 
-customElements.define('devtools-panel', DevtoolsPanel);
+customElements.define('devtools-panels', DevtoolsPanels);

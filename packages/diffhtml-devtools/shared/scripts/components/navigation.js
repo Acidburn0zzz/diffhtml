@@ -8,9 +8,12 @@ class DevtoolsNavigation extends WebComponent([]) {
       <div class="navigation">
         <ol>
           ${nav.map((item, index) => html`
-            <li index={index} selected=${selected === index}>
-              ${item.label}
-              ${item.subLabel && html`<span class="faded">${item.subLabel}</span>`}
+            <li index=${index} selected=${selected === index} onclick=${() => this.onClick(index)}>
+              <span class="label">
+                ${item.icon && html`<i class="shrink-icon icono-${item.icon}"></i>`}
+                ${item.label}
+                ${item.subLabel && html`<span class="faded">${item.subLabel}</span>`}
+              </span>
             </li>
           `)}
         </ol>
@@ -18,26 +21,10 @@ class DevtoolsNavigation extends WebComponent([]) {
     `;
   }
 
-  constructor() {
-    super();
-
-    this.state = {
-      selected: 1,
-      nav: [
-        { label: 'Mounts' },
-        { label: 'Transactions' },
-        { label: 'Flow Tasks', subLabel: '(Middleware)' },
-        { label: 'Debugging' },
-      ],
-    };
-  }
-
-  onClick({ target: { index: selected } }) {
-    this.setState({ selected });
-  }
-
   styles(props, state) {
     return `
+      @import "../styles/icono.css";
+
       :host {
         display: flex;
         height: 100%;
@@ -48,6 +35,7 @@ class DevtoolsNavigation extends WebComponent([]) {
         border-right: 1px solid rgb(64%, 64%, 64%);
         box-sizing: border-box;
         user-select: none;
+        position: sticky;
       }
 
       ol {
@@ -68,19 +56,64 @@ class DevtoolsNavigation extends WebComponent([]) {
         cursor: pointer;
       }
 
+      ol li span.label i {
+        color: #AF8585;
+        left: -7px;
+      }
+
       ol li:hover {
         background-color: #B4B4B4;
       }
 
       ol li[selected='true'] {
-        background-color: #3879D9;
+        background-color: #737373;
+        color: #FFF;
+      }
+
+      ol li:first-child span.label i {
+        left: -4px;
+      }
+
+      ol li[selected='true'] span.label i {
         color: #FFF;
       }
 
       span.faded {
         color: #757575;
       }
+
+      span.label {
+        position: relative;
+        top: -15px;
+      }
+
+      span.label i {
+        transform: scale(0.6,0.6);
+      }
     `;
+  }
+
+  constructor() {
+    super();
+
+    this.state = {
+      selected: 0,
+
+      nav: [
+        { label: 'Transactions', icon: 'list' },
+        { label: 'Mounts', icon: 'sitemap' },
+        { label: 'Middleware', icon: 'chain' },
+        { label: 'Resources', icon: 'cup' },
+        { label: 'Help!', icon: 'exclamationCircle' },
+        { label: 'Settings', icon: 'gear' },
+      ],
+    };
+
+    this.onClick = this.onClick.bind(this);
+  }
+
+  onClick(selected) {
+    this.setState({ selected });
   }
 }
 

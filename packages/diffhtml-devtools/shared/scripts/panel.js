@@ -1,7 +1,10 @@
 const { release, innerHTML, html, use } = diff;
 const background = chrome.runtime.connect({ name: 'devtools-page' });
 
-use(logger());
+// Chrome extensions don't allow inline event handlers, so this middleware
+// makes it easy to leverage event delegation instead.
+//use(logger());
+use(syntheticEvents());
 
 // Relay the tab ID to the background page
 background.postMessage({
@@ -17,37 +20,25 @@ const initialState = {
 
 const reactiveBinding = f => ({ set(t, p, v) { t[p] = v; f(); return !0; } });
 const state = new Proxy(initialState, reactiveBinding(() => render()));
+const version = '1.0.0';
 
-const render = () => innerHTML(document.body, html`
-  <devtools-split-view>
-    <devtools-navigation></devtools-navigation>
+const render = () => {
+  innerHTML(document.body, html`
+    <devtools-split-view>
+      <devtools-navigation></devtools-navigation>
 
-    <devtools-panel id="transactions">
-      <div>
-        <h1>In Progress</h1>
+      <devtools-panels>
+        <devtools-transactions-panel
+          inProgress=${state.inProgress}
+          completed=${state.completed}
+        />
+      </devtools-panels>
 
-        ${state.inProgress
-          .filter(Boolean)
-          .map(transaction => html`<devtools-transaction-row
-            stateName="inProgress"
-            transaction=${transaction}
-          />`)}
-      </div>
+    </devtools-split-view>
 
-      <div>
-        <h1>Completed</h1>
-
-        ${state.completed
-          .filter(Boolean)
-          .map(transaction => html`<devtools-transaction-row
-            stateName="completed"
-            transaction=${transaction}
-          />`)}
-      </div>
-    </devtools-panel>
-
-  </devtools-split-view>
-`);
+    <devtools-header>Detected diffHTML version: ${version}</devtools-header>
+  `);
+};
 
 background.onMessage.addListener(function(message) {
   switch (message.action) {
@@ -63,7 +54,10 @@ background.onMessage.addListener(function(message) {
     }
 
     case 'end': {
-      //state.completed = state.completed.concat(state.inProgress.shift());
+      // Merge transaction data.
+      const transaction = state.inProgress.shift();
+      Object.assign(transaction.args, message.data.args);
+      state.completed = state.completed.concat(transaction);
       break;
     }
   }

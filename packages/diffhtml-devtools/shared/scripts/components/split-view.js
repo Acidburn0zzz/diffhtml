@@ -1,6 +1,6 @@
 class DevtoolsSplitView extends WebComponent([]) {
   render() {
-    return diff.html`
+    return html`
       <style>
         :host {
           display: flex;

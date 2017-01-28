@@ -3,16 +3,16 @@
 
   const pollForFunction = () => new Promise(resolve => {
     if (window.__diffHTMLDevTools) {
-      //console.log('Found devtools...');
+      console.log('Found devtools...');
       resolve(window.__diffHTMLDevTools);
     }
     else {
       // Polling interval that looks for the diffHTML devtools hook.
       let interval = setInterval(() => {
-        //console.log('Checking for devtools...');
+        console.log('Checking for devtools...');
 
         if (window.__diffHTMLDevTools) {
-          //console.log('Found devtools!');
+          console.log('Found devtools!');
           resolve(window.__diffHTMLDevTools);
           clearInterval(interval);
         }
@@ -40,10 +40,11 @@
         markup,
         options,
         state: { oldTree, newTree },
+        state,
       } = transaction;
 
       const start = () => extension.startTransaction(Date.now(), {
-        domNode, markup, options, oldTree, newTree,
+        domNode, markup, options, oldTree, newTree, state, aborted: transaction.aborted
       });
 
       if (!extension) { cacheTask.push(start); } else { start(); }
@@ -54,7 +55,9 @@
 
         transaction.onceEnded(() => {
           const stop = () => extension.endTransaction(Date.now(), {
-            patches, promises,
+            patches,
+            promises,
+            aborted: transaction.aborted,
           });
 
           if (!extension) {
@@ -73,4 +76,4 @@
   }
 
   window.devTools = devTools;
-})(this);
+})(window);
