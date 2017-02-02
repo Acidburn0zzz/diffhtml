@@ -2,7 +2,6 @@ module.exports = ->
   @loadTasks 'build/tasks'
 
   @registerTask 'default', [
-    'jshint'
     'chrome-extension'
   ]
 
@@ -15,6 +14,7 @@ module.exports = ->
     'clean:chrome-extension'
     'compress:chrome-extension'
     'copy:chrome-extension'
+    'browserify:chrome-extension'
     'es6:chrome-extension'
     'shell:chrome-extension'
   ]

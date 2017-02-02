@@ -8,6 +8,8 @@ module.exports = ->
     'node_modules/diffhtml-logger/dist/logger.js'
     'node_modules/diffhtml-components/dist/components.js'
     'node_modules/diffhtml-synthetic-events/dist/synthetic-events.js'
+    'node_modules/semantic-ui-css/semantic.min.css'
+    'node_modules/semantic-ui-icon/**/*'
   ]
 
   @config 'copy',

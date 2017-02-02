@@ -1,22 +1,29 @@
-class DevtoolsSplitView extends WebComponent([]) {
+import { html } from 'diffhtml';
+import { WebComponent } from 'diffhtml-components';
+
+class DevtoolsSplitView extends WebComponent {
   render() {
     return html`
-      <style>
-        :host {
-          display: flex;
-          flex: 1;
-          flex-direction: row;
-        }
-
-        .split-view {
-          display: flex;
-          width: 100%;
-        }
-      </style>
+      <style>${this.styles()}</style>
 
       <div class="split-view">
         <slot></slot>
       </div>
+    `;
+  }
+
+  styles() {
+    return `
+      :host {
+        display: flex;
+        flex: 1;
+        flex-direction: row;
+      }
+
+      .split-view {
+        display: flex;
+        width: 100%;
+      }
     `;
   }
 }

@@ -5,10 +5,10 @@ const savedRequests = [];
 
 chrome.runtime.onConnect.addListener(port => {
   if (port.name === 'devtools-page') {
-    const devToolsListener = function(message, sender, sendResponse) {
+    const devToolsListener = (message, sender, sendResponse) => {
       connections.set(message.tabId, port);
 
-      savedRequests.forEach(function([id, request]) {
+      savedRequests.forEach(([id, request]) => {
         connections.get(id).postMessage(request);
       });
 
@@ -23,7 +23,7 @@ chrome.runtime.onConnect.addListener(port => {
 
     port.onMessage.addListener(devToolsListener);
 
-    port.onDisconnect.addListener(function(port) {
+    port.onDisconnect.addListener(port => {
        port.onMessage.removeListener(devToolsListener);
 
        connections.forEach((prevPort, tabId) => {
@@ -37,18 +37,18 @@ chrome.runtime.onConnect.addListener(port => {
 
 // Receive message from content script and relay to the devTools page for the
 // current tab
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    // Messages from content scripts should have sender.tab set
-    if (sender.tab) {
-      const { id } = sender.tab;
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  // Messages from content scripts should have sender.tab set
+  if (sender.tab) {
+    const { id } = sender.tab;
 
-      if (connections.has(id)) {
-        connections.get(id).postMessage(request);
-      } else {
-        savedRequests.push([id, request]);
-      }
-    } else {
-      console.log("sender.tab not defined.");
+    if (connections.has(id)) {
+      connections.get(id).postMessage(request);
     }
-    return true;
+    else {
+      savedRequests.push([id, request]);
+    }
+  }
+
+  return true;
 });

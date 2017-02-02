@@ -36,10 +36,3 @@ module.exports = ->
       path: 'shared/scripts'
       module: 'devtools'
       chrome: 'js/devtools.js'
-
-    # Panel.
-    buildES6
-      target: target
-      path: 'shared/scripts'
-      module: 'panel'
-      chrome: 'js/panel.js'

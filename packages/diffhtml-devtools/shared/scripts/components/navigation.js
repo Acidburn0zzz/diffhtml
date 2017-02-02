@@ -1,30 +1,39 @@
-class DevtoolsNavigation extends WebComponent([]) {
+import { html } from 'diffhtml';
+import { WebComponent } from 'diffhtml-components';
+
+class DevtoolsNavigation extends WebComponent {
   render() {
     const { nav, selected } = this.state;
 
     return html`
-      <style>${this.styles(this.props, this.state)}</style>
+      <link rel="stylesheet" href="/styles/theme.css">
+      <style>${this.styles()}</style>
 
       <div class="navigation">
         <ol>
           ${nav.map((item, index) => html`
             <li index=${index} selected=${selected === index} onclick=${() => this.onClick(index)}>
               <span class="label">
-                ${item.icon && html`<i class="shrink-icon icono-${item.icon}"></i>`}
+                ${item.icon && html`<i class="${item.icon} icon" />`}
                 ${item.label}
                 ${item.subLabel && html`<span class="faded">${item.subLabel}</span>`}
               </span>
             </li>
           `)}
         </ol>
+
+        <div class="credit">
+          Created by
+          <p>
+            <a target="_blank" href="http://twitter.com/tbranyen">@tbranyen</a>
+          </p>
+        </div>
       </div>
     `;
   }
 
-  styles(props, state) {
+  styles() {
     return `
-      @import "../styles/icono.css";
-
       :host {
         display: flex;
         height: 100%;
@@ -54,6 +63,7 @@ class DevtoolsNavigation extends WebComponent([]) {
         color: #333;
         line-height: 2px;
         cursor: pointer;
+        margin-bottom: 0;
       }
 
       ol li span.label i {
@@ -78,17 +88,26 @@ class DevtoolsNavigation extends WebComponent([]) {
         color: #FFF;
       }
 
+      i.icon {
+        font-size: 30px;
+      }
+
       span.faded {
         color: #757575;
       }
 
       span.label {
         position: relative;
-        top: -15px;
+        top: -8px;
       }
 
       span.label i {
         transform: scale(0.6,0.6);
+      }
+
+      div.credit {
+        font-size: 10px;
+        padding: 25px;
       }
     `;
   }
@@ -100,20 +119,20 @@ class DevtoolsNavigation extends WebComponent([]) {
       selected: 0,
 
       nav: [
-        { label: 'Transactions', icon: 'list' },
-        { label: 'Mounts', icon: 'sitemap' },
-        { label: 'Middleware', icon: 'chain' },
-        { label: 'Resources', icon: 'cup' },
-        { label: 'Help!', icon: 'exclamationCircle' },
-        { label: 'Settings', icon: 'gear' },
+        { route: '', label: 'Transactions', icon: 'exchange' },
+        { route: 'mounts', label: 'Mounts', icon: 'sitemap' },
+        { route: 'middleware', label: 'Middleware', icon: 'chain' },
+        { route: 'resources', label: 'Resources', icon: 'heartbeat' },
+        { route: 'help', label: 'Help', icon: 'help' },
+        { route: 'settings', label: 'Settings', icon: 'settings' },
       ],
     };
-
-    this.onClick = this.onClick.bind(this);
   }
 
-  onClick(selected) {
+  onClick = selected => {
+    const { nav } = this.state;
     this.setState({ selected });
+    location.hash = nav[selected].route;
   }
 }
 

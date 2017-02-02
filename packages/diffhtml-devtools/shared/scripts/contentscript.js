@@ -19,7 +19,6 @@
   });
 
   document.addEventListener('diffHTML:start', ev => {
-    console.log(ev.detail);
     postMessage(JSON.parse(ev.detail));
   });
 

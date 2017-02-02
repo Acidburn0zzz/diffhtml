@@ -1,0 +1,12 @@
+{
+  "plugins": [
+    "transform-es2015-modules-commonjs",
+    "transform-class-properties"
+  ],
+
+  "env": {
+    "middleware": {
+      "presets": ["es2015"]
+    }
+  }
+}

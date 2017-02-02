@@ -1,79 +1,92 @@
-(function(window) {
-  'use strict';
+import unique from 'unique-selector';
+    window.unique = unique;
+
+function devTools(options = {}) {
+  const cacheTask = [];
+  const elements = new Set();
+  let extension = null;
+  let interval = null;
 
   const pollForFunction = () => new Promise(resolve => {
     if (window.__diffHTMLDevTools) {
-      console.log('Found devtools...');
       resolve(window.__diffHTMLDevTools);
     }
     else {
       // Polling interval that looks for the diffHTML devtools hook.
-      let interval = setInterval(() => {
-        console.log('Checking for devtools...');
-
+      interval = setInterval(() => {
         if (window.__diffHTMLDevTools) {
-          console.log('Found devtools!');
           resolve(window.__diffHTMLDevTools);
           clearInterval(interval);
         }
-      }, 1000);
+      }, 2000);
     }
   });
 
-  const cacheTask = [];
+  function devToolsTask(transaction) {
+    const {
+      domNode, markup, options, state: { oldTree, newTree }, state
+    } = transaction;
 
-  function devTools() {
-    let extension = null;
+    const selector = unique(domNode);
 
-    const poller = pollForFunction().then(devToolsExtension => {
-      extension = devToolsExtension().activate();
+    elements.add(selector);
 
-      if (cacheTask.length) {
-        cacheTask.forEach(cb => cb());
-        cacheTask.length = 0;
-      }
+    const start = () => extension.startTransaction(Date.now(), {
+      domNode: selector,
+      markup,
+      options,
+      state,
     });
 
-    return transaction => {
-      const {
-        domNode,
+    if (extension) { start(); }
+
+    return () => transaction.onceEnded(() => {
+      const { aborted, patches, promises, completed } = transaction;
+      const stop = () => extension.endTransaction(Date.now(), {
+        domNode: selector,
         markup,
         options,
-        state: { oldTree, newTree },
         state,
-      } = transaction;
-
-      const start = () => extension.startTransaction(Date.now(), {
-        domNode, markup, options, oldTree, newTree, state, aborted: transaction.aborted
+        patches,
+        promises,
+        completed,
+        aborted,
       });
 
-      if (!extension) { cacheTask.push(start); } else { start(); }
+      if (!extension) { cacheTask.push(() => stop()); } else { stop(); }
+    });
+  }
 
-      // Triggered just before the transaction completes.
-      return () => {
-        const { patches, promises } = transaction;
+  devToolsTask.subscribe = ({ VERSION, internals }) => {
+    pollForFunction().then(devToolsExtension => {
+      const MiddlewareCache = [];
 
-        transaction.onceEnded(() => {
-          const stop = () => extension.endTransaction(Date.now(), {
-            patches,
-            promises,
-            aborted: transaction.aborted,
-          });
+      internals.MiddlewareCache.forEach(middleware => {
+        const name = middleware.name
+          .replace(/([A-Z])/g, ' $1')
+          .replace(/^./, str => str.toUpperCase())
+          .split(' ').slice(0, -1).join(' ');
 
-          if (!extension) {
-            cacheTask.push(stop);
-          }
-          else {
-            stop();
-          }
+        MiddlewareCache.push(name);
+      });
+
+      extension = devToolsExtension().activate({
+        VERSION,
+        internals: {
+          MiddlewareCache,
+        }
+      });
+
+      if (cacheTask.length) {
+        setTimeout(() => {
+          cacheTask.forEach(cb => cb());
+          cacheTask.length = 0;
         });
-      };
-    };
-  }
+      }
+    });
+  };
 
-  if (typeof module === 'object') {
-    module.exports = devTools;
-  }
+  return devToolsTask;
+}
 
-  window.devTools = devTools;
-})(window);
+export default devTools;
