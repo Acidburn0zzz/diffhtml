@@ -23,6 +23,7 @@ class DevtoolsTransactionsPanel extends WebComponent {
           <thead>
             <tr>
               <th rowspan="2"></th>
+              <th class="center aligned" rowspan="2">FPS</th>
               <th class="center aligned" rowspan="2">Status</th>
               <th class="center aligned" rowspan="2">DOM Node</th>
               <th class="center aligned" rowspan="2">Transitions</th>
@@ -46,6 +47,8 @@ class DevtoolsTransactionsPanel extends WebComponent {
               index=${index}
               stateName="completed"
               transaction=${transaction.args}
+              startTime=${transaction.startDate}
+              endTime=${transaction.endDate}
               isExpanded=${expandedIndex === index}
               toggleExpanded=${this.toggleExpanded}
               inspect=${inspect}
@@ -56,6 +59,8 @@ class DevtoolsTransactionsPanel extends WebComponent {
             <devtools-transaction-row
               key=${completed.length + index}
               index=${completed.length + index}
+              startTime=${transaction.startDate}
+              endTime=${transaction.endDate}
               stateName="in progress"
               transaction=${transaction.args}
               isExpanded=${expandedIndex === index}

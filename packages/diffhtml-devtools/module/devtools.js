@@ -31,7 +31,8 @@ function devTools(options = {}) {
 
     elements.add(selector);
 
-    const start = () => extension.startTransaction(Date.now(), {
+    const startDate = Date.now();
+    const start = () => extension.startTransaction({
       domNode: selector,
       markup,
       options,
@@ -40,21 +41,25 @@ function devTools(options = {}) {
 
     if (extension) { start(); }
 
-    return () => transaction.onceEnded(() => {
-      const { aborted, patches, promises, completed } = transaction;
-      const stop = () => extension.endTransaction(Date.now(), {
-        domNode: selector,
-        markup,
-        options,
-        state,
-        patches,
-        promises,
-        completed,
-        aborted,
-      });
+    return () => {
+      const endDate = Date.now();
 
-      if (!extension) { cacheTask.push(() => stop()); } else { stop(); }
-    });
+      transaction.onceEnded(() => {
+        const { aborted, patches, promises, completed } = transaction;
+        const stop = () => extension.endTransaction(startDate, endDate, {
+          domNode: selector,
+          markup,
+          options,
+          state,
+          patches,
+          promises,
+          completed,
+          aborted,
+        });
+
+        if (!extension) { cacheTask.push(() => stop()); } else { stop(); }
+      });
+    };
   }
 
   devToolsTask.subscribe = ({ VERSION, internals }) => {

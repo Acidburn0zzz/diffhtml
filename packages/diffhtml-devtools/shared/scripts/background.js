@@ -5,10 +5,10 @@ const savedRequests = [];
 
 chrome.runtime.onConnect.addListener(port => {
   if (port.name === 'devtools-page') {
-    const devToolsListener = (message, sender, sendResponse) => {
+    const devToolsListener = function(message, sender, sendResponse) {
       connections.set(message.tabId, port);
 
-      savedRequests.forEach(([id, request]) => {
+      savedRequests.forEach(function([id, request]) {
         connections.get(id).postMessage(request);
       });
 
@@ -23,7 +23,7 @@ chrome.runtime.onConnect.addListener(port => {
 
     port.onMessage.addListener(devToolsListener);
 
-    port.onDisconnect.addListener(port => {
+    port.onDisconnect.addListener(function(port) {
        port.onMessage.removeListener(devToolsListener);
 
        connections.forEach((prevPort, tabId) => {

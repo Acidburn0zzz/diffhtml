@@ -51,8 +51,9 @@ function devTools() {
 
     elements.add(selector);
 
+    var startDate = Date.now();
     var start = function start() {
-      return extension.startTransaction(Date.now(), {
+      return extension.startTransaction({
         domNode: selector,
         markup: markup,
         options: options,
@@ -65,14 +66,16 @@ function devTools() {
     }
 
     return function () {
-      return transaction.onceEnded(function () {
+      var endDate = Date.now();
+
+      transaction.onceEnded(function () {
         var aborted = transaction.aborted,
             patches = transaction.patches,
             promises = transaction.promises,
             completed = transaction.completed;
 
         var stop = function stop() {
-          return extension.endTransaction(Date.now(), {
+          return extension.endTransaction(startDate, endDate, {
             domNode: selector,
             markup: markup,
             options: options,

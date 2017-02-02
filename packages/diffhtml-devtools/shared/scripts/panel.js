@@ -102,8 +102,6 @@ background.onMessage.addListener(message => {
     }
 
     case 'end': {
-      // Merge transaction data.
-      state.inProgress.shift();
       state.completed = state.completed.concat(message.data);
       break;
     }

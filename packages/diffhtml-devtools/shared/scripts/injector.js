@@ -17,13 +17,13 @@ if (!window.__diffHTMLDevTools) {
         return state;
       },
 
-      startTransaction(startDate, args={}) {
-        triggerEvent('start', { startDate, args });
+      startTransaction(args={}) {
+        triggerEvent('start', { args });
         return state;
       },
 
-      endTransaction(endDate, args={}) {
-        triggerEvent('end', { endDate, args });
+      endTransaction(startDate, endDate, args={}) {
+        triggerEvent('end', { startDate, endDate, args });
         return state;
       },
     };

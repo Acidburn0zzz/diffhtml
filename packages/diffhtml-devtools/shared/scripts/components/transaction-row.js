@@ -18,11 +18,21 @@ class DevtoolsTransactionRow extends WebComponent {
     toggleExpanded: PropTypes.func,
     inspect: PropTypes.func,
     isExpanded: PropTypes.bool,
+    startTime: PropTypes.number,
+    endTime: PropTypes.number,
   }
 
   render() {
     const { getColorFromStat } = this;
-    const { index, transaction, stateName, toggleExpanded, isExpanded } = this.props;
+    const {
+      startTime,
+      endTime,
+      index,
+      transaction,
+      stateName,
+      toggleExpanded,
+      isExpanded,
+    } = this.props;
     const { stats } = this.state;
 
     const {
@@ -46,6 +56,8 @@ class DevtoolsTransactionRow extends WebComponent {
       }
     });
 
+    const fps = endTime ? 1000 / (endTime - startTime) : Infinity;
+
     return html`
       <link rel="stylesheet" href="/styles/theme.css">
       <style>${this.styles()}</style>
@@ -59,6 +71,14 @@ class DevtoolsTransactionRow extends WebComponent {
             <i class="icon warning sign yellow" />
           </div>
         `}
+      </td>
+
+      <td class="center aligned">
+        ${fps && (
+          fps === Infinity && '&infin;' ||
+          fps >= 60 && '>=60' ||
+          fps.toFixed(1)
+        )}
       </td>
 
       <td class="center aligned">
