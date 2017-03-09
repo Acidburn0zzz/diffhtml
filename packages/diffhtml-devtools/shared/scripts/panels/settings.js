@@ -3,32 +3,69 @@ import { WebComponent, PropTypes } from 'diffhtml-components';
 
 class DevtoolsSettingsPanel extends WebComponent {
   render() {
-    const { inProgress = [], completed = [] } = this.props;
-    const { expandedIndex } = this.state;
-
     return html`
+      <link rel="stylesheet" href="/styles/theme.css">
       <style>${this.styles()}</style>
 
-      <h3>Settings</h3>
-      <hr>
+      <div class="ui tall segment">
+        <h3>Settings</h3>
+        <p>
+          Alter the internals of diffHTML. Useful for toggling performance and
+          changing how sampling transactions works.
+        </p>
+      </div>
 
-      <form>
+      <div class="ui styled fluid accordion">
+        <div class="title active">
+          <i class="dropdown icon"></i>
+          Performance
+        </div>
 
-      </form>
+        <div class="content active">
+          <p class="transition visible" style="display: block !important;">
+            <div class="ui toggle checkbox">
+              <input type="checkbox">
+              <label>Enable Performance Tracking</label>
+            </div>
+          </p>
+        </div>
+
+        <div class="title">
+          <i class="dropdown icon"></i>
+          Transaction Sampling
+        </div>
+
+        <div class="content">
+          <p>
+
+          </p>
+        </div>
+      </div>
     `;
   }
 
   styles() {
     return `
-      @import "/styles/theme.css";
-
       :host {
         display: block;
       }
 
-      h3 {
-        margin-top: 20px;
-        margin-left: 20px;
+      .ui.segment {
+        border-left: 0;
+        border-right: 0;
+        border-top: 0;
+        margin-top: 0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: #AF8585;
+        border-radius: 0 !important;
+        color: #FFF;
+        user-select: none;
+      }
+
+      .ui.accordion {
+        box-shadow: none !important;
       }
     `;
   }

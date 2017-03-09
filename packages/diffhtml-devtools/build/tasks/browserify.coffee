@@ -2,20 +2,27 @@ module.exports = ->
   @loadNpmTasks 'grunt-browserify'
 
   @config 'browserify',
-    'chrome-extension':
+    'bridge':
       files:
-        'chrome-extension/dist/extension/js/panel.js': ['shared/scripts/panel.js']
+        'chrome-extension/dist/extension/js/bridge.js': ['shared/scripts/bridge.js']
 
       options:
-        transform: ['babelify']
-
-    'module':
-      files:
-        'module/devtools.es5.js': ['module/devtools.js']
-
-      options:
-        transform: ['babelify']
+        transform: ['babelify', ['uglifyify', { "global": true }]]
         plugin: ['browserify-derequire']
 
         browserifyOptions:
           standalone: 'devTools'
+
+    'chrome-extension':
+      files:
+        'chrome-extension/dist/extension/js/panel.js': ['shared/scripts/panel.js']
+        'chrome-extension/dist/extension/js/contentscript.js': ['shared/scripts/contentscript.js']
+        'chrome-extension/dist/extension/js/devtools.js': ['shared/scripts/devtools.js']
+        'chrome-extension/dist/extension/js/background.js': ['shared/scripts/background.js']
+
+      options:
+        transform: ['babelify', 'brfs', ["aliasify", { "global": true }]]
+
+        alias:
+          react: 'diffhtml-react-compat'
+          'react-dom': 'diffhtml-react-compat'

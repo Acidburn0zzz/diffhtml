@@ -181,17 +181,22 @@ class DevtoolsTransactionRow extends WebComponent {
         text-align: center;
       }
 
-      td {
-        padding: 10px;
-      }
+      td { padding: 10px; text-align: center; }
+      td:hover { background-color: #E4E4E4 !important; }
+      td.red:hover { background-color: #F1B1B1 !important; }
+      td.red:hover a { color: #772E2E !important; }
+      td.yellow:hover { background-color: #FFEBA0 !important; }
+      td.yellow:hover a { color: #EF7C11 !important; }
+      td.green:hover { background-color: #A5DEA5 !important; }
+      td.green:hover a { color: #009407 !important; }
 
-      .red { background-color: #f1b1b1; }
-      .red a { color: #772e2e; }
+      .red { background-color: #F1B1B1; }
+      .red a { color: #772E2E; }
 
-      .yellow { background-color: #ffeba0; }
-      .yellow a { color: #ef7c11; }
+      .yellow { background-color: #FFEBA0; }
+      .yellow a { color: #EF7C11; }
 
-      .green { background-color: #a5dea5; }
+      .green { background-color: #A5DEA5; }
       .green a { color: #009407; }
     `;
   }

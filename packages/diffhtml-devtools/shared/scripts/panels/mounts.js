@@ -1,9 +1,24 @@
+import React from 'react'
+import { Dropdown } from 'semantic-ui-react'
+
 import { html } from 'diffhtml';
 import { WebComponent, PropTypes } from 'diffhtml-components';
 
 class DevtoolsMountsPanel extends WebComponent {
+  static propTypes = {
+    mounts: PropTypes.array,
+  }
+
   render() {
-    const { middleware } = this.props;
+    const { mounts = [] } = this.props;
+
+    const options = mounts.map(({ selector }) => ({
+      text: selector,
+      value: selector,
+    }));
+
+    const Dropdown = () => {};
+    const test = 'lol';
 
     return html`
       <link rel="stylesheet" href="/styles/theme.css">
@@ -11,26 +26,13 @@ class DevtoolsMountsPanel extends WebComponent {
 
       <div class="ui tall segment">
         <h3>Mounts</h3>
-        <p>
-          Inspect the active DOM elements being rendered into.
-        </p>
-      </div>
 
-      <div class="ui center aligned basic segment">
-        <div class="ui left icon action input">
-          <i class="search icon"></i>
-          <input type="text" placeholder="Order #">
-          <div class="ui blue submit button">Search</div>
-        </div>
-
-        <div class="ui horizontal divider">
-          Or
-        </div>
-
-        <div class="ui teal labeled icon button">
-          Create New Order
-          <i class="add icon"></i>
-        </div>
+        <${Dropdown}
+          placeholder='Select DOM Node'
+          fluid
+          selection
+          options=${options}
+        />
       </div>
     `;
   }
@@ -41,16 +43,20 @@ class DevtoolsMountsPanel extends WebComponent {
         display: block;
       }
 
-      .middleware {
-        margin-top: 20px;
-        margin-left: 20px;
-      }
+      * { box-sizing: border-box; }
 
       .ui.segment {
         border-left: 0;
         border-right: 0;
         border-top: 0;
         margin-top: 0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: #AF8585;
+        border-radius: 0 !important;
+        color: #FFF;
+        user-select: none;
       }
     `;
   }

@@ -10,6 +10,6 @@ module.exports = ->
       ]
 
       tasks: [
+        'browserify:bridge'
         'chrome-extension'
-        'es6'
       ]

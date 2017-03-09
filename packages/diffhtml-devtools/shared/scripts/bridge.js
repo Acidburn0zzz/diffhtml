@@ -1,9 +1,8 @@
 import unique from 'unique-selector';
-    window.unique = unique;
 
-function devTools(options = {}) {
+export default function devTools(options = {}) {
   const cacheTask = [];
-  const elements = new Set();
+  const selectors = new Set();
   let extension = null;
   let interval = null;
 
@@ -28,29 +27,34 @@ function devTools(options = {}) {
     } = transaction;
 
     const selector = unique(domNode);
+    selectors.add(selector);
 
-    elements.add(selector);
-
-    const startDate = Date.now();
+    const startDate = performance.now();
     const start = () => extension.startTransaction({
       domNode: selector,
       markup,
       options,
-      state,
+      state: Object.assign({}, state, state.nextTransaction && {
+        nextTransaction: undefined,
+      }),
     });
 
     if (extension) { start(); }
 
     return () => {
-      const endDate = Date.now();
+      const endDate = performance.now();
+      const patches = JSON.parse(JSON.stringify(transaction.patches));
+      const promises = transaction.promises.slice();
 
       transaction.onceEnded(() => {
-        const { aborted, patches, promises, completed } = transaction;
+        const { aborted, completed } = transaction;
         const stop = () => extension.endTransaction(startDate, endDate, {
           domNode: selector,
           markup,
           options,
-          state,
+          state: Object.assign({}, state, state.nextTransaction && {
+            nextTransaction: undefined
+          }),
           patches,
           promises,
           completed,
@@ -75,23 +79,28 @@ function devTools(options = {}) {
         MiddlewareCache.push(name);
       });
 
+      const mounts = [];
+
+      selectors.forEach(selector => mounts.push({
+        selector,
+      }));
+
       extension = devToolsExtension().activate({
         VERSION,
         internals: {
           MiddlewareCache,
-        }
+        },
+        mounts,
       });
 
       if (cacheTask.length) {
         setTimeout(() => {
           cacheTask.forEach(cb => cb());
           cacheTask.length = 0;
-        });
+        }, 250);
       }
-    });
+    }).catch(console.log);
   };
 
   return devToolsTask;
 }
-
-export default devTools;

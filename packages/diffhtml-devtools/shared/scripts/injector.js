@@ -1,6 +1,6 @@
 if (!window.__diffHTMLDevTools) {
-  // This file gets loaded into the browser where the application is running. It
-  // provides the bridge into the extension.
+  // This file gets loaded into the browser where the application is running.
+  // It provides the bridge into the extension.
   const triggerEvent = (action, data) => {
     const evt = new CustomEvent(`diffHTML:${action}`, {
       detail: JSON.stringify({ action, data })
@@ -10,7 +10,7 @@ if (!window.__diffHTMLDevTools) {
   };
 
   // A global hook for the devtools which is picked up by the application.
-  window.__diffHTMLDevTools = () => {
+  const devTools = window.__diffHTMLDevTools = () => {
     const state = {
       activate(args={}) {
         triggerEvent('activated', args);

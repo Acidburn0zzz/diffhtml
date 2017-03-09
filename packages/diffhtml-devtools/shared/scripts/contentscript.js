@@ -1,28 +1,21 @@
-{
-  const postMessage = body => chrome.runtime.sendMessage(body);
-  const receiveMessages = fn => chrome.runtime.onMessage.addListener(fn);
+const fs = require('fs');
+const bridgeModule = fs.readFileSync(__dirname + '/../../chrome-extension/dist/extension/js/bridge.js', 'utf8');
+const injectorModule = fs.readFileSync(__dirname + '/injector.js', 'utf8');
 
-  const script = document.createElement('script');
-  script.src = chrome.extension.getURL('/scripts/injector.js');
+const middleware = document.createElement('script')
+middleware.appendChild(document.createTextNode(bridgeModule));
+document.documentElement.appendChild(middleware);
+middleware.parentNode.removeChild(middleware);
 
-  if (document.readyState === 'complete') {
-    document.getElementsByTagName('body')[0].appendChild(script);
-  }
-  else {
-    document.addEventListener('DOMContentLoaded', () => {
-      document.getElementsByTagName('body')[0].appendChild(script);
-    });
-  }
+const injector = document.createElement('script')
+injector.appendChild(document.createTextNode(injectorModule));
+document.documentElement.appendChild(injector);
+injector.parentNode.removeChild(injector);
 
-  document.addEventListener('diffHTML:activated', ev => {
-    postMessage(JSON.parse(ev.detail));
-  });
+const postMessage = body => chrome.runtime.sendMessage(body);
+//const receiveMessages = fn => chrome.runtime.onMessage.addListener(fn);
+const postEvent = ev => postMessage(JSON.parse(ev.detail));
 
-  document.addEventListener('diffHTML:start', ev => {
-    postMessage(JSON.parse(ev.detail));
-  });
-
-  document.addEventListener('diffHTML:end', ev => {
-    postMessage(JSON.parse(ev.detail));
-  });
-}
+document.addEventListener('diffHTML:activated', postEvent);
+document.addEventListener('diffHTML:start', postEvent);
+document.addEventListener('diffHTML:end', postEvent);

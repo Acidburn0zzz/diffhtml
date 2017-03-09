@@ -1,7 +1,11 @@
 import { html } from 'diffhtml';
-import { WebComponent } from 'diffhtml-components';
+import { WebComponent, PropTypes } from 'diffhtml-components';
 
 class DevtoolsNavigation extends WebComponent {
+  static propTypes = {
+    activeRoute: PropTypes.string,
+  }
+
   render() {
     const { nav, selected } = this.state;
 
@@ -36,7 +40,7 @@ class DevtoolsNavigation extends WebComponent {
     return `
       :host {
         display: flex;
-        height: 100%;
+        height: calc(100% - 37px);
         flex-basis: 200px;
         flex: none;
         background-color: #F3F3F3;
@@ -44,7 +48,7 @@ class DevtoolsNavigation extends WebComponent {
         border-right: 1px solid rgb(64%, 64%, 64%);
         box-sizing: border-box;
         user-select: none;
-        position: sticky;
+        overflow-y: auto;
       }
 
       ol {
@@ -129,9 +133,16 @@ class DevtoolsNavigation extends WebComponent {
     };
   }
 
+  componentWillReceiveProps(nextProps) {
+    const route = location.hash.slice(1);
+    const routes = this.state.nav.map(nav => nav.route);
+    const selected = routes.indexOf(route);
+
+    this.setState({ selected });
+  }
+
   onClick = selected => {
     const { nav } = this.state;
-    this.setState({ selected });
     location.hash = nav[selected].route;
   }
 }

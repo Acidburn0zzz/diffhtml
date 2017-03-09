@@ -12,10 +12,11 @@
   },
   "content_scripts": [{
     "matches": ["<all_urls>", "*://*/*", "http://*/*", "https://*/*"],
-    "js": ["scripts/contentscript.js"],
+    "js": ["js/contentscript.js"],
     "run_at": "document_start"
   }],
   "web_accessible_resources": [
+    "devtools.es5.js",
     "scripts/*",
     "scripts/**/*",
     "styles/*",

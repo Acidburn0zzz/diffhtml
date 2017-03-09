@@ -7,7 +7,7 @@ class DevtoolsMiddlewarePanel extends WebComponent {
   }
 
   render() {
-    const { middleware } = this.props;
+    const { middleware = [] } = this.props;
 
     return html`
       <link rel="stylesheet" href="/styles/theme.css">
@@ -50,6 +50,13 @@ class DevtoolsMiddlewarePanel extends WebComponent {
         border-right: 0;
         border-top: 0;
         margin-top: 0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: #AF8585;
+        border-radius: 0 !important;
+        color: #FFF;
+        user-select: none;
       }
     `;
   }

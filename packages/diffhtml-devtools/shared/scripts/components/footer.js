@@ -31,6 +31,8 @@ class DevtoolsFooter extends WebComponent {
         font-weight: bold;
         text-align: right;
         border-top: 1px solid rgba(34, 36, 38, 0.1);
+        z-index: 200;
+        position: relative;
       }
 
       .icon.input {

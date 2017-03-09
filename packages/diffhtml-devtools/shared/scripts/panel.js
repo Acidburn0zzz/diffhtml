@@ -1,7 +1,7 @@
-import { release, innerHTML, html, use } from 'diffhtml';
-import syntheticEvents from 'diffhtml-synthetic-events';
-import logger from 'diffhtml-logger';
-import verifyState from 'diffhtml-verify-state';
+import { innerHTML, html, use } from 'diffhtml';
+//import syntheticEvents from 'diffhtml-synthetic-events';
+//import logger from 'diffhtml-logger';
+//import verifyState from 'diffhtml-verify-state';
 
 // Components
 import './components/panels';
@@ -12,7 +12,10 @@ import './components/transaction-row';
 
 // Panels
 import './panels/transactions';
+import './panels/mounts';
 import './panels/middleware';
+import './panels/resources';
+import './panels/help';
 import './panels/settings';
 
 const { assign } = Object;
@@ -20,9 +23,9 @@ const background = chrome.runtime.connect({ name: 'devtools-page' });
 
 // Chrome extensions don't allow inline event handlers, so this middleware
 // makes it easy to leverage event delegation instead.
-use(syntheticEvents());
+//use(syntheticEvents());
 //use(logger());
-//use(verifyState({ debug: true }));
+//use(verifyState({ debug: false }));
 
 // Relay the tab ID to the background page
 background.postMessage({
@@ -41,46 +44,51 @@ const initialState = {
 const reactiveBinding = f => ({ set(t, p, v) { t[p] = v; f(); return !0; } });
 const state = new Proxy(initialState, reactiveBinding(() => render()));
 window.onhashchange = () => state.activeRoute = location.hash;
-window.state = state;
 
 const inspect = selector => chrome.devtools.inspectedWindow.eval(
   `inspect($$('${selector}')[0])`
 );
 
 const render = () => innerHTML(document.body, html`
-  <devtools-split-view>
-    <devtools-navigation></devtools-navigation>
+  ${!state.version && html`
+    <h1 id="not-found">&lt;/&gt; diffHTML middleware was <span class="not">not</span> found</h1>
+  `}
 
-    <devtools-panels route="" activeRoute=${state.activeRoute}>
-      <devtools-transactions-panel
-        inProgress=${state.inProgress}
-        completed=${state.completed}
-        inspect=${inspect}
-      />
-    </devtools-panels>
+  ${state.version && html`
+    <devtools-split-view>
+      <devtools-navigation activeRoute=${state.activeRoute} />
 
-    <devtools-panels route="#mounts" activeRoute=${state.activeRoute}>
-      <p>Mounts</p>
-    </devtools-panels>
+      <devtools-panels route="" activeRoute=${state.activeRoute}>
+        <devtools-transactions-panel
+          inProgress=${state.inProgress}
+          completed=${state.completed}
+          inspect=${inspect}
+        />
+      </devtools-panels>
 
-    <devtools-panels route="#middleware" activeRoute=${state.activeRoute}>
-      <devtools-middleware-panel middleware=${state.middleware} />
-    </devtools-panels>
+      <devtools-panels route="#mounts" activeRoute=${state.activeRoute}>
+        <devtools-mounts-panel mounts=${state.mounts} />
+      </devtools-panels>
 
-    <devtools-panels route="#resources" activeRoute=${state.activeRoute}>
-      <p>Resources</p>
-    </devtools-panels>
+      <devtools-panels route="#middleware" activeRoute=${state.activeRoute}>
+        <devtools-middleware-panel middleware=${state.middleware} />
+      </devtools-panels>
 
-    <devtools-panels route="#help" activeRoute=${state.activeRoute}>
-      <p>Help</p>
-    </devtools-panels>
+      <devtools-panels route="#resources" activeRoute=${state.activeRoute}>
+        <devtools-resources-panel />
+      </devtools-panels>
 
-    <devtools-panels route="#settings" activeRoute=${state.activeRoute}>
-      <devtools-settings-panel />
-    </devtools-panels>
-  </devtools-split-view>
+      <devtools-panels route="#help" activeRoute=${state.activeRoute}>
+        <devtools-help-panel />
+      </devtools-panels>
 
-  <devtools-footer>Detected diffHTML version: ${state.version}</devtools-footer>
+      <devtools-panels route="#settings" activeRoute=${state.activeRoute}>
+        <devtools-settings-panel />
+      </devtools-panels>
+    </devtools-split-view>
+
+    <devtools-footer>Detected diffHTML version: ${state.version}</devtools-footer>
+  `}
 `);
 
 background.onMessage.addListener(message => {
@@ -91,6 +99,7 @@ background.onMessage.addListener(message => {
         completed: [],
         version: message.data.VERSION,
         middleware: message.data.internals.MiddlewareCache,
+        mounts: message.data.mounts,
       });
 
       break;
@@ -102,6 +111,7 @@ background.onMessage.addListener(message => {
     }
 
     case 'end': {
+      state.inProgress.shift();
       state.completed = state.completed.concat(message.data);
       break;
     }

@@ -11,11 +11,8 @@
   <main></main>
 
   <script src="../node_modules/diffhtml/dist/diffhtml.js"></script>
-  <script src="../module/devtools.js"></script>
   <script>
-    const { use, html, innerHTML } = diff;
-
-    use(devTools());
+    const { html, innerHTML } = diff;
 
     const animate = (el, ...args) => new Promise(resolve => el.animate(
       ...args

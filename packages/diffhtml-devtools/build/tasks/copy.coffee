@@ -23,6 +23,14 @@ module.exports = ->
         {
           src: [
             '**/*'
+          ]
+          expand: true
+          cwd: 'module'
+          dest: chromeDest
+        }
+        {
+          src: [
+            '**/*'
             '!_assets/**'
           ]
           expand: true
