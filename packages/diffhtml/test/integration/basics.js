@@ -90,14 +90,14 @@ describe('Integration: Basics', function() {
 
     // Temporarily removed this function, saving this test until a suitable
     // replacement is created. This test will be migrated then.
-    it.skip('can diff a fragment into an element', function() {
+    it('can diff a fragment into an element', function() {
       var fragment = document.createDocumentFragment();
 
       diff.innerHTML(fragment, `
         <h1>It works</h1>
       `);
 
-      diff.element(this.fixture, fragment, { inner: true });
+      diff.innerHTML(this.fixture, fragment);
 
       assert.equal(this.fixture.childNodes[0].nodeName.toLowerCase(), 'h1');
       assert.equal(this.fixture.childNodes[0].childNodes[0].nodeValue, 'It works');

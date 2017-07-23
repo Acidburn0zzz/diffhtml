@@ -33,118 +33,6 @@ describe('Transaction', function() {
     });
   });
 
-  describe('renderNext', () => {
-    it('will render the next transaction in the queue', () => {
-      const { domNode, markup, options } = this;
-      const newMarkup = '<div>Next test</div>';
-      const nextTransaction = Transaction.create(domNode, newMarkup, {
-        tasks: [spy(), endAsPromise],
-      });
-
-      const transaction = Transaction.create(domNode, markup, options);
-      transaction.state.nextTransaction = nextTransaction;
-      transaction.start();
-
-      ok(transaction instanceof Transaction);
-      ok(transaction.tasks[0].calledOnce);
-
-      transaction.end();
-
-      equal(nextTransaction.options.tasks[0].calledOnce, true);
-    });
-
-    it('will schedule a transaction if a previous transaction is active', () => {
-      const { domNode, markup, options } = this;
-      const newMarkup = '<div>Next test</div>';
-      const nextTransaction = Transaction.create(domNode, newMarkup, {
-        tasks: [schedule, spy(), endAsPromise]
-      });
-
-      const transaction = Transaction.create(domNode, markup, options);
-      transaction.state.nextTransaction = nextTransaction;
-      transaction.start();
-
-      ok(transaction instanceof Transaction);
-      ok(transaction.tasks[0].calledOnce);
-      equal(nextTransaction.options.tasks[1].calledOnce, false);
-
-      transaction.end();
-
-      equal(nextTransaction.options.tasks[1].calledOnce, true);
-    });
-
-    it('will schedule a transaction if a previous transaction is active', () => {
-      const { domNode, markup, options } = this;
-      const newMarkup = '<div>Next test</div>';
-
-      const transaction = Transaction.create(domNode, markup, {
-        tasks: [schedule, spy()]
-      });
-
-      transaction.start();
-
-      const nextTransaction = Transaction.create(domNode, newMarkup, {
-        tasks: [schedule, spy(), endAsPromise]
-      });
-
-      ok(transaction.state.isRendering);
-
-      const promise = nextTransaction.start();
-
-      ok(transaction.tasks[1].calledOnce);
-      equal(nextTransaction.tasks[1].called, false);
-
-      transaction.end();
-
-      equal(nextTransaction.tasks[1].calledOnce, true);
-      equal(nextTransaction.completed, undefined);
-
-      return promise.then(() => {
-        equal(nextTransaction.completed, true);
-      });
-    });
-
-    it('will only schedule a single transaction at a time', () => {
-      const { domNode, markup, options } = this;
-      const newMarkup = '<div>Next test</div>';
-
-      const transaction = Transaction.create(domNode, markup, {
-        tasks: [schedule, spy()]
-      });
-
-      transaction.start();
-
-      const skipTransaction = Transaction.create(domNode, newMarkup, {
-        tasks: [schedule, spy(), endAsPromise]
-      });
-
-      const nextTransaction = Transaction.create(domNode, newMarkup, {
-        tasks: [schedule, spy(), endAsPromise]
-      });
-
-      ok(transaction.state.isRendering);
-
-      const skipPromise = skipTransaction.start();
-      const nextPromise = nextTransaction.start();
-
-      equal(skipTransaction.tasks[1].called, false);
-      equal(nextTransaction.tasks[1].called, false);
-
-      transaction.end();
-
-      equal(skipTransaction.tasks[1].calledOnce, false);
-      equal(nextTransaction.tasks[1].calledOnce, true);
-
-      equal(skipTransaction.completed, undefined);
-      equal(nextTransaction.completed, undefined);
-
-      return Promise.all([skipPromise, nextPromise]).then(() => {
-        equal(skipTransaction.completed, true);
-        equal(nextTransaction.completed, true);
-      });
-    });
-  });
-
   describe('flow', () => {
     it('will set up a single function to flow', () => {
       const testFn = spy();
@@ -199,8 +87,8 @@ describe('Transaction', function() {
       equal(testFnTwo.calledWith(this), true);
     });
 
-    it('will abort the flow', () => {
-      const testFnOne = transaction => transaction.abort();
+    it('will force abort the flow', () => {
+      const testFnOne = transaction => transaction.abort(true);
       const testFnTwo = spy();
       const testFnThree = spy();
 
@@ -213,6 +101,22 @@ describe('Transaction', function() {
       equal(testFnTwo.called, false);
       equal(testFnThree.calledOnce, true);
       equal(testFnThree.calledWith(transaction), true);
+    });
+
+    it('will silently abort the flow', () => {
+      const testFnOne = transaction => transaction.abort(false);
+      const testFnTwo = spy();
+      const testFnThree = spy();
+
+      const transaction = Transaction.create(null, null, {
+        tasks: [testFnOne, testFnTwo, testFnThree],
+      });
+
+      transaction.start();
+
+      equal(testFnTwo.called, false);
+      equal(testFnThree.calledOnce, false);
+      equal(testFnThree.calledWith(transaction), false);
     });
   });
 

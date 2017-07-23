@@ -323,13 +323,11 @@ describe('HTML (Tagged template)', function() {
     });
   });
 
-  it.skip('will not mess up interpolation if HTML comments are used', () => {
+  it('will not mess up interpolation if HTML comments are used', () => {
     const fixtures = ['test', 'this'];
-    const span = html`
-      <!--
+    const span = html`<!--
       <span>${fixtures[0]}</span>
-      -->
-      <span>${fixtures[1]}</span>
+      --><span>${fixtures[1]}</span>
     `;
 
     deepEqual(span, {

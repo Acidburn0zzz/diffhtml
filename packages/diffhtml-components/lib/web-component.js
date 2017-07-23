@@ -12,14 +12,15 @@ const { setPrototypeOf, assign, keys } = Object;
 const getObserved = ({ propTypes }) => propTypes ? keys(propTypes) : [];
 
 // Creates the `component.props` object.
-const createProps = domNode => {
+const createProps = (domNode, props = {}) => {
   const observedAttributes = getObserved(domNode.constructor);
   const initialProps = {
     children: [].map.call(domNode.childNodes, createTree),
+    ...props,
   };
 
   return observedAttributes.reduce((props, attr) => assign(props, {
-    [attr]: attr in domNode ? domNode[attr] : domNode.getAttribute(attr) || undefined,
+    [attr]: attr in domNode ? domNode[attr] : domNode.getAttribute(attr) || initialProps[attr],
   }), initialProps);
 };
 
@@ -53,20 +54,22 @@ export default upgradeSharedClass(class WebComponent extends HTMLElement {
   }
 
   [$$render]() {
-    this.props = createProps(this);
+    this.props = createProps(this, this.props);
+
     if (this.shadowRoot) {
       innerHTML(this.shadowRoot, this.render(this.props, this.state));
     }
     else {
       innerHTML(this, this.render(this.props, this.state));
     }
+
     this.componentDidUpdate();
   }
 
-  constructor() {
+  constructor(props) {
     super();
 
-    this.props = createProps(this);
+    this.props = createProps(this, props);
     this.state = createState(this);
     this.context = createContext(this);
 
@@ -113,7 +116,7 @@ export default upgradeSharedClass(class WebComponent extends HTMLElement {
 
   attributeChangedCallback() {
     if (this.shadowRoot && !Debounce.has(this)) {
-      const nextProps = createProps(this);
+      const nextProps = createProps(this, this.props);
       this.componentWillReceiveProps(nextProps);
       this.props = nextProps;
       this[$$render]();

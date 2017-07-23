@@ -1,3 +1,4 @@
+import Transaction from '../transaction';
 import { StateCache } from '../util/caches';
 
 /**
@@ -12,29 +13,27 @@ import { StateCache } from '../util/caches';
 export default function schedule(transaction) {
   // The state is a global store which is shared by all like-transactions.
   const { state } = transaction;
+  const { isRendering, activeTransaction, nextTransaction } = state;
 
   // If there is an in-flight transaction render happening, push this
   // transaction into a queue.
-  if (state.isRendering) {
-    // Resolve an existing transaction that we're going to pave over in the
-    // next statement.
-    if (state.nextTransaction) {
-      state.nextTransaction.promises[0].resolve(state.nextTransaction);
-    }
+  if (isRendering) {
+    const { tasks } = transaction;
+    const chainTransaction = nextTransaction || activeTransaction;
 
-    // Set a pointer to this current transaction to render immediatately after
-    // the current transaction completes.
+    // Pave over the `nextTransaction` to chain off the previous.
     state.nextTransaction = transaction;
 
-    const deferred = {};
-    const resolver = new Promise(resolve => (deferred.resolve = resolve));
+    // Abort the remaining tasks.
+    transaction.abort();
 
-    resolver.resolve = deferred.resolve;
-    transaction.promises = [resolver];
-
-    return transaction.abort();
+    return transaction.promise = chainTransaction.promise.then(() => {
+      transaction.aborted = false;
+      return Transaction.flow(transaction, tasks.slice(1));
+    });
   }
 
   // Indicate we are now rendering a transaction for this DOM Node.
   state.isRendering = true;
+  state.activeTransaction = transaction;
 }

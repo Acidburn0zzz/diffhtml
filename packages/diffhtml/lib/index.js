@@ -34,7 +34,12 @@ const api = {
 // changes and will supply fallbacks when APIs change.
 //
 // Note: The HTML parser is only available in this mode.
-const Internals = Object.assign(internals, api, { parse, defaultTasks, tasks, createNode });
+const Internals = Object.assign(internals, api, {
+  parse,
+  defaultTasks,
+  tasks,
+  createNode,
+});
 
 // Attach a circular reference to `Internals` for ES/CJS builds.
 api.Internals = Internals;
