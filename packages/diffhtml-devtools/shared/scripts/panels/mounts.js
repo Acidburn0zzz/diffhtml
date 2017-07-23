@@ -2,7 +2,8 @@ import React from 'react'
 import { Dropdown } from 'semantic-ui-react'
 
 import { html } from 'diffhtml';
-import { WebComponent, PropTypes } from 'diffhtml-components';
+import { WebComponent } from 'diffhtml-components';
+import PropTypes from 'prop-types';
 
 class DevtoolsMountsPanel extends WebComponent {
   static propTypes = {

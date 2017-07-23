@@ -1,6 +1,6 @@
 import unique from 'unique-selector';
 
-export default function devTools(options = {}) {
+export default function devTools(Internals) {
   const cacheTask = [];
   const selectors = new Set();
   let extension = null;
@@ -30,18 +30,22 @@ export default function devTools(options = {}) {
     selectors.add(selector);
 
     const startDate = performance.now();
-    const start = () => extension.startTransaction({
-      domNode: selector,
-      markup,
-      options,
-      state: Object.assign({}, state, state.nextTransaction && {
-        nextTransaction: undefined,
-      }),
-    });
+    const start = function() {
+      return extension.startTransaction({
+        domNode: selector,
+        markup,
+        options,
+        state: Object.assign({}, state, state.nextTransaction && {
+          nextTransaction: undefined,
+        }, {
+          activeTransaction: undefined,
+        }),
+      });
+    };
 
     if (extension) { start(); }
 
-    return () => {
+    return function() {
       const endDate = performance.now();
       const patches = JSON.parse(JSON.stringify(transaction.patches));
       const promises = transaction.promises.slice();
@@ -53,7 +57,9 @@ export default function devTools(options = {}) {
           markup,
           options,
           state: Object.assign({}, state, state.nextTransaction && {
-            nextTransaction: undefined
+            nextTransaction: undefined,
+          }, {
+            activeTransaction: undefined,
           }),
           patches,
           promises,
@@ -66,11 +72,13 @@ export default function devTools(options = {}) {
     };
   }
 
-  devToolsTask.subscribe = ({ VERSION, internals }) => {
+  devToolsTask.subscribe = () => {
+    const { VERSION } = Internals;
+
     pollForFunction().then(devToolsExtension => {
       const MiddlewareCache = [];
 
-      internals.MiddlewareCache.forEach(middleware => {
+      Internals.MiddlewareCache.forEach(middleware => {
         const name = middleware.name
           .replace(/([A-Z])/g, ' $1')
           .replace(/^./, str => str.toUpperCase())

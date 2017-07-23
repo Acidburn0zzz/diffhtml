@@ -1,5 +1,6 @@
 import { html } from 'diffhtml';
-import { WebComponent, PropTypes } from 'diffhtml-components';
+import { WebComponent } from 'diffhtml-components';
+import PropTypes from 'prop-types';
 
 class DevtoolsNavigation extends WebComponent {
   static propTypes = {
@@ -126,7 +127,7 @@ class DevtoolsNavigation extends WebComponent {
         { route: '', label: 'Transactions', icon: 'exchange' },
         { route: 'mounts', label: 'Mounts', icon: 'sitemap' },
         { route: 'middleware', label: 'Middleware', icon: 'chain' },
-        { route: 'resources', label: 'Resources', icon: 'heartbeat' },
+        { route: 'resources', label: 'Health', icon: 'heartbeat' },
         { route: 'help', label: 'Help', icon: 'help' },
         { route: 'settings', label: 'Settings', icon: 'settings' },
       ],

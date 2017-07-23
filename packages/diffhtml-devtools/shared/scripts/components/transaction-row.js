@@ -1,5 +1,6 @@
 import { html } from 'diffhtml';
-import { WebComponent, PropTypes } from 'diffhtml-components';
+import { WebComponent } from 'diffhtml-components';
+import PropTypes from 'prop-types';
 import SemanticUITable from '../semantic-ui/table';
 
 class DevtoolsTransactionRow extends WebComponent {

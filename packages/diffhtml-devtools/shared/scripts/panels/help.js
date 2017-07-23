@@ -1,5 +1,6 @@
 import { html } from 'diffhtml';
-import { WebComponent, PropTypes } from 'diffhtml-components';
+import { WebComponent } from 'diffhtml-components';
+import PropTypes from 'prop-types';
 
 class DevtoolsHelpPanel extends WebComponent {
   render() {

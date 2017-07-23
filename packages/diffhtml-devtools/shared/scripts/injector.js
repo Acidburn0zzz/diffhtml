@@ -10,7 +10,7 @@ if (!window.__diffHTMLDevTools) {
   };
 
   // A global hook for the devtools which is picked up by the application.
-  const devTools = window.__diffHTMLDevTools = () => {
+  window.__diffHTMLDevTools = () => {
     const state = {
       activate(args={}) {
         triggerEvent('activated', args);

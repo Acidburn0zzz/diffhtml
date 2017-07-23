@@ -7,7 +7,7 @@ module.exports = ->
         'chrome-extension/dist/extension/js/bridge.js': ['shared/scripts/bridge.js']
 
       options:
-        transform: ['babelify', ['uglifyify', { "global": true }]]
+        transform: ['babelify', 'brfs']
         plugin: ['browserify-derequire']
 
         browserifyOptions:

@@ -1,5 +1,5 @@
 import { innerHTML, html, use } from 'diffhtml';
-//import syntheticEvents from 'diffhtml-synthetic-events';
+import syntheticEvents from 'diffhtml-middleware-synthetic-events';
 //import logger from 'diffhtml-logger';
 //import verifyState from 'diffhtml-verify-state';
 
@@ -23,7 +23,7 @@ const background = chrome.runtime.connect({ name: 'devtools-page' });
 
 // Chrome extensions don't allow inline event handlers, so this middleware
 // makes it easy to leverage event delegation instead.
-//use(syntheticEvents());
+use(syntheticEvents());
 //use(logger());
 //use(verifyState({ debug: false }));
 
@@ -43,6 +43,7 @@ const initialState = {
 
 const reactiveBinding = f => ({ set(t, p, v) { t[p] = v; f(); return !0; } });
 const state = new Proxy(initialState, reactiveBinding(() => render()));
+
 window.onhashchange = () => state.activeRoute = location.hash;
 
 const inspect = selector => chrome.devtools.inspectedWindow.eval(

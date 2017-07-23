@@ -1,6 +1,6 @@
-const fs = require('fs');
-const bridgeModule = fs.readFileSync(__dirname + '/../../chrome-extension/dist/extension/js/bridge.js', 'utf8');
-const injectorModule = fs.readFileSync(__dirname + '/injector.js', 'utf8');
+var fs = require('fs');
+var bridgeModule = fs.readFileSync(__dirname +  '/../../chrome-extension/dist/extension/js/bridge.js', 'utf8');
+var injectorModule = fs.readFileSync(__dirname + '/injector.js', 'utf8');
 
 const middleware = document.createElement('script')
 middleware.appendChild(document.createTextNode(bridgeModule));

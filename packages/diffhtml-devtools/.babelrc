@@ -1,12 +1,8 @@
 {
   "plugins": [
+    "add-module-exports",
     "transform-es2015-modules-commonjs",
     "transform-class-properties",
-    "add-module-exports"
-  ],
-  "env": {
-    "middleware": {
-      "presets": ["es2015"] 
-    }
-  }
+    "transform-es2015-arrow-functions"
+  ]
 }
