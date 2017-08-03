@@ -42,19 +42,14 @@ export function unprotectVTree(vTree) {
 export function cleanMemory(isBusy = false) {
   StateCache.forEach(state => (isBusy = state.isRendering || isBusy));
 
-  // TODO Pause GC in between renders.
-  //if (isBusy) {
-  //  return;
-  //}
-
   memory.allocated.forEach(vTree => memory.free.add(vTree));
   memory.allocated.clear();
 
   // Clean out unused elements, if we have any elements cached that no longer
   // have a backing VTree, we can safely remove them from the cache.
-  NodeCache.forEach((node, descriptor) => {
-    if (!memory.protected.has(descriptor)) {
-      NodeCache.delete(descriptor);
+  NodeCache.forEach((node, vTree) => {
+    if (!memory.protected.has(vTree)) {
+      NodeCache.delete(vTree);
     }
   });
 }

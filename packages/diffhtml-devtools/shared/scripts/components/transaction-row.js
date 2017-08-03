@@ -16,7 +16,6 @@ class DevtoolsTransactionRow extends WebComponent {
       }),
     }),
     stateName: PropTypes.string,
-    toggleExpanded: PropTypes.func,
     inspect: PropTypes.func,
     isExpanded: PropTypes.bool,
     startTime: PropTypes.number,
@@ -31,10 +30,9 @@ class DevtoolsTransactionRow extends WebComponent {
       index,
       transaction,
       stateName,
-      toggleExpanded,
       isExpanded,
     } = this.props;
-    const { stats } = this.state;
+    const stats = this.calculateStats(this.props);
 
     const {
       domNode = '',
@@ -202,29 +200,8 @@ class DevtoolsTransactionRow extends WebComponent {
     `;
   }
 
-  constructor() {
-    super();
-
-    this.state = {
-      stats: {
-        insert: 0,
-        replace: 0,
-        remove: 0,
-        nodeValue: 0,
-        setAttribute: 0,
-        removeAttribute: 0,
-      }
-    };
-  }
-
-  componentWillReceiveProps(nextProps) {
+  calculateStats(nextProps) {
     const { transaction } = nextProps;
-    const { patches } = transaction;
-
-    if (!patches) { return; }
-
-    const { TREE_OPS, SET_ATTRIBUTE, REMOVE_ATTRIBUTE, NODE_VALUE } = patches;
-
     const stats = {
       insert: 0,
       replace: 0,
@@ -233,6 +210,14 @@ class DevtoolsTransactionRow extends WebComponent {
       setAttribute: 0,
       removeAttribute: 0,
     };
+
+    if (!transaction || !transaction.patches) {
+      return stats;
+    }
+
+    const { patches } = transaction;
+    const { TREE_OPS, SET_ATTRIBUTE, REMOVE_ATTRIBUTE, NODE_VALUE } = patches;
+
 
     TREE_OPS.forEach(patchset => {
       if (patchset.INSERT_BEFORE) {
@@ -249,7 +234,7 @@ class DevtoolsTransactionRow extends WebComponent {
     });
 
     if (NODE_VALUE) {
-      stats.nodeValue = NODE_VALUE.length / 2;
+      stats.nodeValue = NODE_VALUE.length / 3;
     }
 
     if (SET_ATTRIBUTE) {
@@ -260,7 +245,7 @@ class DevtoolsTransactionRow extends WebComponent {
       stats.removeAttribute = REMOVE_ATTRIBUTE.length / 2;
     }
 
-    this.setState({ stats });
+    return stats;
   }
 
   getColorFromStat = number => {

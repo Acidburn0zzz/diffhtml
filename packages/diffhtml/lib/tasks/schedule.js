@@ -12,7 +12,15 @@ import { StateCache } from '../util/caches';
  */
 export default function schedule(transaction) {
   // The state is a global store which is shared by all like-transactions.
-  const { state } = transaction;
+  let { state } = transaction;
+
+
+  StateCache.forEach(otherState => {
+    if (otherState.isRendering) {
+      state = otherState;
+    }
+  });
+
   const { isRendering, activeTransaction, nextTransaction } = state;
 
   // If there is an in-flight transaction render happening, push this
@@ -24,10 +32,12 @@ export default function schedule(transaction) {
     // Pave over the `nextTransaction` to chain off the previous.
     state.nextTransaction = transaction;
 
-    // Abort the remaining tasks.
+    // Abort the remaining tasks (but do not signal completion).
     transaction.abort();
 
-    return transaction.promise = chainTransaction.promise.then(() => {
+    const promise = chainTransaction.promise || Promise.resolve();
+
+    return transaction.promise = promise.then(() => {
       transaction.aborted = false;
       return Transaction.flow(transaction, tasks.slice(1));
     });

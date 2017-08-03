@@ -16,12 +16,13 @@ const createProps = (domNode, props = {}) => {
   const observedAttributes = getObserved(domNode.constructor);
   const initialProps = {
     children: [].map.call(domNode.childNodes, createTree),
-    ...props,
   };
 
-  return observedAttributes.reduce((props, attr) => assign(props, {
+  const incoming = observedAttributes.reduce((props, attr) => assign(props, {
     [attr]: attr in domNode ? domNode[attr] : domNode.getAttribute(attr) || initialProps[attr],
   }), initialProps);
+
+  return Object.assign({}, props, incoming);
 };
 
 // Creates the `component.state` object.
@@ -56,14 +57,9 @@ export default upgradeSharedClass(class WebComponent extends HTMLElement {
   [$$render]() {
     this.props = createProps(this, this.props);
 
-    if (this.shadowRoot) {
-      innerHTML(this.shadowRoot, this.render(this.props, this.state));
-    }
-    else {
-      innerHTML(this, this.render(this.props, this.state));
-    }
-
-    this.componentDidUpdate();
+    innerHTML(this.shadowRoot, this.render(this.props, this.state)).then(() => {
+      this.componentDidUpdate();
+    });
   }
 
   constructor(props) {
@@ -97,8 +93,10 @@ export default upgradeSharedClass(class WebComponent extends HTMLElement {
   }
 
   connectedCallback() {
-    console.log('here');
-    this.attachShadow({ mode: 'open' });
+    if (!this.shadowRoot) {
+      this.attachShadow({ mode: 'open' });
+    }
+
     this[$$render]();
     this.componentDidMount();
   }
@@ -114,17 +112,16 @@ export default upgradeSharedClass(class WebComponent extends HTMLElement {
     this.componentDidUnmount();
   }
 
-  attributeChangedCallback() {
-    if (this.shadowRoot && !Debounce.has(this)) {
+  attributeChangedCallback(name, value) {
+    if (!Debounce.has(this) && value !== null) {
       const nextProps = createProps(this, this.props);
-      this.componentWillReceiveProps(nextProps);
-      this.props = nextProps;
-      this[$$render]();
+      const nextState = this.state;
 
-      Debounce.set(this, setTimeout(() => {
-        Debounce.delete(this);
+      this.componentWillReceiveProps(nextProps);
+
+      if (this.shouldComponentUpdate(nextProps, nextState)) {
         this[$$render]();
-      }));
+      }
     }
   }
 });

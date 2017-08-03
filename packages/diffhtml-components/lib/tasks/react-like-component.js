@@ -130,6 +130,11 @@ export default function reactLikeComponentTask(transaction) {
         if (INSERT_BEFORE) {
           for (let i = 0; i < INSERT_BEFORE.length; i += 3) {
             const newTree = INSERT_BEFORE[i + 1];
+
+            if (typeof newTree.rawNodeName !== 'function') {
+              continue;
+            }
+
             componentDidMount(newTree);
           }
         }
@@ -138,6 +143,10 @@ export default function reactLikeComponentTask(transaction) {
           for (let i = 0; i < REPLACE_CHILD.length; i += 2) {
             const newTree = REPLACE_CHILD[i];
             const oldTree = REPLACE_CHILD[i + 1];
+
+            if (typeof newTree.rawNodeName !== 'function' && typeof oldTree.rawNodeName !== 'function') {
+              continue;
+            }
 
             if (InstanceCache.has(oldTree)) {
               ComponentTreeCache.delete(InstanceCache.get(oldTree));
@@ -153,6 +162,11 @@ export default function reactLikeComponentTask(transaction) {
         if (REMOVE_CHILD) {
           for (let i = 0; i < REMOVE_CHILD.length; i += 1) {
             const oldTree = REMOVE_CHILD[i];
+
+            if (typeof oldTree.rawNodeName !== 'function') {
+              continue;
+            }
+
             const oldInstance = InstanceCache.has(oldTree);
 
             componentDidUnmount(oldTree);
@@ -316,9 +330,7 @@ reactLikeComponentTask.syncTreeHook = (oldTree, newTree, keys, parentTree) => {
   }
 
   // Do not pave over HOC that have been set outside of the physical tree.
-  if (!ChildParentCache.has(newTree)) {
-    ChildParentCache.set(newTree, parentTree);
-  }
-
-  return newTree;
+  //if (!ChildParentCache.has(newTree)) {
+  //  ChildParentCache.set(newTree, parentTree);
+  //}
 };

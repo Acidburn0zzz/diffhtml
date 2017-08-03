@@ -1,7 +1,7 @@
 import { innerHTML, html, use } from 'diffhtml';
 import syntheticEvents from 'diffhtml-middleware-synthetic-events';
-//import logger from 'diffhtml-logger';
-//import verifyState from 'diffhtml-verify-state';
+import logger from 'diffhtml-middleware-logger';
+//import verifyState from 'diffhtml-middleware-verify-state';
 
 // Components
 import './components/panels';
@@ -24,8 +24,7 @@ const background = chrome.runtime.connect({ name: 'devtools-page' });
 // Chrome extensions don't allow inline event handlers, so this middleware
 // makes it easy to leverage event delegation instead.
 use(syntheticEvents());
-//use(logger());
-//use(verifyState({ debug: false }));
+//use(verifyState({ debug: true }));
 
 // Relay the tab ID to the background page
 background.postMessage({
@@ -90,7 +89,8 @@ const render = () => innerHTML(document.body, html`
 
     <devtools-footer>Detected diffHTML version: ${state.version}</devtools-footer>
   `}
-`);
+`)
+.catch(ex => { throw ex; });
 
 background.onMessage.addListener(message => {
   switch (message.action) {

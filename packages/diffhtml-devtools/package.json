@@ -59,6 +59,12 @@
     }
   },
   "dependencies": {
-    "semantic-ui-react": "^0.67.0"
+    "semantic-ui-react": "^0.67.0",
+    "diffhtml-react-compat": "1.0.0-beta.7",
+    "diffhtml-components": "1.0.0-beta.7",
+    "diffhtml-middleware-synthetic-events": "1.0.0-beta.7",
+    "diffhtml-middleware-logger": "1.0.0-beta.7",
+    "diffhtml-middleware-verify-state": "1.0.0-beta.7",
+    "diffhtml": "1.0.0-beta.7"
   }
 }

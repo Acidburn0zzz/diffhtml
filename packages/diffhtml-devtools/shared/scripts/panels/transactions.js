@@ -58,8 +58,8 @@ class DevtoolsTransactionsPanel extends WebComponent {
               startTime=${transaction.startDate}
               endTime=${transaction.endDate}
               isExpanded=${expandedIndex === index}
-              toggleExpanded=${this.toggleExpanded}
               inspect=${inspect}
+              onclick=${this.toggleExpanded}
             />
           `)}
 
