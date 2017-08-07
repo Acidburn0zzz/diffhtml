@@ -3,8 +3,8 @@
       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"></meta>
       <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
 
-      <title>diffHTML: The easy-to-use HTML Virtual DOM for the web</title>
-      <link rel="stylesheet" href="./styles.css"></link>
+      <title>diffHTML: The easy-to-use HTML Virtual DOM built for the web!</title>
+      <link rel="stylesheet" href="./index.css"></link>
     </head><body>
       <layer>
         <div class="open-menu">≡</div>
@@ -45,11 +45,11 @@
       
         
 
-        <a href="api.html#use"><li>use</li></a>
+        <a href="api.html#html"><li>html</li></a>
       
         
 
-        <a href="api.html#html"><li>html</li></a>
+        <a href="api.html#use"><li>use</li></a>
       
         
 
@@ -166,12 +166,9 @@
       <section id="content">
         <header>
           <h1><±/> diffHTML</h1>
-          The easy-to-use HTML Virtual DOM for the web
+          The easy-to-use HTML Virtual DOM built for the web!
         </header>
 
-        <a href="https://github.com/tbranyen/diffhtml/edit/improve-docs/packages/diffhtml-website/pages/index.md">
-          Edit <span class="fa fa-github"></span>
-        </a>
         <h1 id="getting-started">Getting started</h1>
 <div class="hero">
   <p class="social">
@@ -213,68 +210,95 @@
   </p>
 
   <div class="video-container">
+
   </div>
   
 </div>
 
 <h3 id="about">About</h3>
-<p>The core of diffHTML is a powerful and easy-to-use virtual dom library that can help devs get from the basics to something like React. Being designed to be flexible and allow graceful. Use HTML or JSX, they both get normalized to the same DOM tree. You can diff plain HTML strings, or get fancy with a tagged template handler that will allow you to get React-like capabilities without needing a build step.</p>
+<p>The diffHTML project is a collection of modules that all depend on or work with
+the
+<a href="https://github.com/tbranyen/diffhtml/tree/master/packages/diffhtml">diffhtml</a>
+module. This module provides functions to allow writing declarative
+HTML that gets diffed through a Virtual DOM and patched into the real DOM.</p>
+<p><strong>Turns:</strong></p>
+<pre><code class="lang-javascript">const div = document.createElement(&#39;div&#39;);
+
+div.innerHTML = &#39;Hello world&#39;;
+docuent.body.appendChild(div);
+div.textContent = &#39;Hello world!&#39;;</code></pre>
+<p><strong>Into:</strong></p>
+<pre><code class="lang-javascript">diff.innerHTML(document.body, &#39;&lt;div&gt;Hello world&lt;/div&gt;&#39;);
+diff.innerHTML(document.body, &#39;&lt;div&gt;Hello world!&lt;/div&gt;&#39;);</code></pre>
+<p>Unlike React, the core engine of diffHTML was designed with the browser in mind
+first so includes the DOM rendering engine. This makes diffHTML suitable for
+web applications with a single package.</p>
+<p>The core of diffHTML is a powerful and easy-to-use virtual dom library that can
+help devs get from the basics to something like React. Being designed to be
+flexible and allow graceful. Use HTML or JSX, they both get normalized to the
+same DOM tree. You can diff plain HTML strings, or get fancy with a tagged
+template handler that will allow you to get React-like capabilities without
+needing a build step.</p>
 <h3 id="installing">Installing</h3>
 <p>We encourage brand new developers who want to try diffHTML to use our pre-made Glitch examples. This will let you mess with the API without having to download or configure anything.</p>
 <ul>
 <li><p>CDN (Recommended for Beginners):</p>
-<pre><code>&lt;script src=&quot;https://diffhtml.org/master/diffhtml/dist/diffhtml.js&quot;&gt;&lt;/script&gt;
-</code></pre></li>
+<pre><code>&lt;script src=&quot;https://diffhtml.org/master/diffhtml/dist/diffhtml.js&quot;&gt;&lt;/script&gt;</code></pre></li>
 <li><svg viewBox="0 0 18 7" width="40" style="position: relative; top: 2px;">
   <path fill="#CB3837" d="M0,0v6h5v1h4v-1h9v-6"></path>
   <path fill="#FFF" d="M1,1v4h2v-3h1v3h1v-4h1v5h2v-4h1v2h-1v1h2v-4h1v4h2v-3h1v3h1v-3h1v3h1v-4"></path>
 </svg>
 
-<pre><code class="lang-sh">npm install diffhtml
-</code></pre>
+<pre><code class="lang-sh">npm install diffhtml</code></pre>
 </li>
 <li><p><img width="60" src="images/yarn-logo.svg"></img></p>
-<pre><code class="lang-sh">yarn add diffhtml
-</code></pre>
+<pre><code class="lang-sh">yarn add diffhtml</code></pre>
 </li>
 </ul>
 <p><em>While <code>diffhtml</code> is the core package to install, there are many other modules you may also want to install depending on your use cases.</em></p>
 <h3 id="accessing-the-api">Accessing the API</h3>
 <ul>
 <li><p>Browser:</p>
-<pre><code class="lang-javascript">import { innerHTML } from &#39;diffhtml&#39;
-
-innerHTML(document.body, &#39;Hello world!&#39;)
-</code></pre>
+<pre><code class="lang-xml">&lt;script src=&quot;node_modules/diffhtml/dist/diffhtml.js&quot;&gt;&lt;/script&gt;</code></pre>
+<pre><code class="lang-javascript">diff.innerHTML(document.body, &#39;Hello world!&#39;)</code></pre>
 </li>
 <li><p>ES Modules:</p>
 <pre><code class="lang-javascript">import { innerHTML } from &#39;diffhtml&#39;
 
-innerHTML(document.body, &#39;Hello world!&#39;)
-</code></pre>
+innerHTML(document.body, &#39;Hello world!&#39;)</code></pre>
 </li>
 <li><p>Node:</p>
 <pre><code class="lang-javascript">const { innerHTML } = require(&#39;diffhtml&#39;)
 
-innerHTML(document.body, &#39;Hello world!&#39;)
-</code></pre>
+innerHTML(document.body, &#39;Hello world!&#39;)</code></pre>
 </li>
 </ul>
+
+        <a href="https://github.com/tbranyen/diffhtml/edit/improve-docs/packages/diffhtml-website/pages/index.md">
+          Edit on GitHub &nbsp; <span class="fa fa-github"></span>
+        </a>
+
+        <footer>
+          Built with
+          <span class="fa fa-heart" style="color: red; margin: 0 15px;"></span>
+          <a href="https://twitter.com/tbranyen" style="text-decoration: none;">
+            <strong>by @tbranyen</strong></a>
+            <span style="margin-left: 15px;"> | </span>
+            <a style="margin-left: 15px; text-decoration: none;" href="https://raw.githubusercontent.com/tbranyen/diffhtml/master/LICENSE"> MIT License</a>
+        </footer>
       </section>
 
-      <footer>
-        Built with
-        <span class="fa fa-heart" style="color: red; margin: 0 15px;"></span>
-        <a href="https://twitter.com/tbranyen" style="text-decoration: none;">
-          <strong>by @tbranyen</strong></a>
-          <span style="margin-left: 15px;"> | </span>
-          <a style="margin-left: 15px; text-decoration: none;" href="https://raw.githubusercontent.com/tbranyen/diffhtml/master/LICENSE"> MIT License</a>
-      </footer>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
       <script src="/node_modules/diffhtml/dist/diffhtml.js"></script>
       <script src="/node_modules/diffhtml-components/dist/web-component.js"></script>
-      <script>
-        hljs.initHighlightingOnLoad();
+      <script>hljs.initHighlightingOnLoad();
+
+        // Every time a refresh happens, reload the highlight code block.
+        setTimeout(() => staticSyncHandlers.add(() => {
+          setTimeout(() => [...document.querySelectorAll('pre code')].forEach(block => {
+            hljs.highlightBlock(block);
+          }));
+        }));
 
         document.querySelector('.open-menu').onclick = ev => {
           ev.stopImmediatePropagation();
@@ -292,6 +316,5 @@ innerHTML(document.body, &#39;Hello world!&#39;)
             body.classList.remove('open');
             body.onclick = null;
           };
-        };
-      </script>
+        };</script>
     </body></html>

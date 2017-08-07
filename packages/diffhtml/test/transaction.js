@@ -2,8 +2,10 @@ import { ok, deepEqual, equal, doesNotThrow, throws } from 'assert';
 import { spy, stub } from 'sinon';
 import Transaction from '../lib/transaction';
 import use from '../lib/use';
+import release from '../lib/release';
 import schedule from '../lib/tasks/schedule';
 import endAsPromise from '../lib/tasks/end-as-promise';
+import validateMemory from './util/validateMemory';
 
 describe('Transaction', function() {
   beforeEach(() => {
@@ -12,6 +14,11 @@ describe('Transaction', function() {
       <div>Hello world</div>
     `;
     this.options = { inner: false, tasks: [spy()] };
+  });
+
+  afterEach(() => {
+    release(this.domNode);
+    validateMemory();
   });
 
   describe('create', () => {
@@ -87,7 +94,7 @@ describe('Transaction', function() {
       equal(testFnTwo.calledWith(this), true);
     });
 
-    it('will force abort the flow', () => {
+    it.only('will force abort the flow', () => {
       const testFnOne = transaction => transaction.abort(true);
       const testFnTwo = spy();
       const testFnThree = spy();

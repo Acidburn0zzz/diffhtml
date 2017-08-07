@@ -40,6 +40,7 @@
   </p>
 
   <div class="video-container">
+
   </div>
   <!--
   <img src="https://www.styled-components.com/static/logo.png" style="border: none">
@@ -48,7 +49,39 @@
 
 ### About
 
-The core of diffHTML is a powerful and easy-to-use virtual dom library that can help devs get from the basics to something like React. Being designed to be flexible and allow graceful. Use HTML or JSX, they both get normalized to the same DOM tree. You can diff plain HTML strings, or get fancy with a tagged template handler that will allow you to get React-like capabilities without needing a build step.
+The diffHTML project is a collection of modules that all depend on or work with
+the
+[diffhtml](https://github.com/tbranyen/diffhtml/tree/master/packages/diffhtml)
+module. This module provides functions to allow writing declarative
+HTML that gets diffed through a Virtual DOM and patched into the real DOM.
+
+**Turns:**
+
+``` javascript
+const div = document.createElement('div');
+
+div.innerHTML = 'Hello world';
+docuent.body.appendChild(div);
+div.textContent = 'Hello world!';
+```
+
+**Into:**
+
+``` javascript
+diff.innerHTML(document.body, '<div>Hello world</div>');
+diff.innerHTML(document.body, '<div>Hello world!</div>');
+```
+
+Unlike React, the core engine of diffHTML was designed with the browser in mind
+first so includes the DOM rendering engine. This makes diffHTML suitable for
+web applications with a single package.
+
+The core of diffHTML is a powerful and easy-to-use virtual dom library that can
+help devs get from the basics to something like React. Being designed to be
+flexible and allow graceful. Use HTML or JSX, they both get normalized to the
+same DOM tree. You can diff plain HTML strings, or get fancy with a tagged
+template handler that will allow you to get React-like capabilities without
+needing a build step.
 
 ### Installing
 
@@ -81,10 +114,12 @@ _While `diffhtml` is the core package to install, there are many other modules y
 
 * Browser:
 
-  ``` javascript
-  import { innerHTML } from 'diffhtml'
+  ``` xml
+  <script src="node_modules/diffhtml/dist/diffhtml.js"></script>
+  ```
 
-  innerHTML(document.body, 'Hello world!')
+  ``` javascript
+  diff.innerHTML(document.body, 'Hello world!')
   ```
 
 * ES Modules:
