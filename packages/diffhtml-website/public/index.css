@@ -1,9 +1,86 @@
+@import 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/tomorrow-night.min.css';
+@import 'https://fonts.googleapis.com/css?family=Lato:300,400,bold';
+@import 'https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css';
+
 html, body {
-  margin: 0;
-  background-color: #F3F3F3;
+  margin: 0 auto;
+  background: linear-gradient(to right, #333 50%, #F3F3F3 50%, #F3F3F3 100%);
   display: flex;
+  font-family: Lato, Arial, Helvetica, sans-serif;
 }
 
-layout {
+code {
+  border-radius: 5px;
+  font-family: "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
+  font-size: 14px;
+  margin-right: 1px;
+  padding-left: 15px !important;
+  background-color: #222;
+}
+
+layer#navigation {
   display: flex;
+  background-color: #333333;
+  padding: 0 30px;
+}
+
+layer#navigation a {
+  color: #FFF;
+  text-decoration: none;
+}
+
+layer#navigation a:hover {
+}
+
+layer#navigation ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  line-height: 30px;
+  padding-top: 50px;
+  padding-left: 10px;
+}
+
+layer#navigation li.header h4 {
+  border-bottom: 1px solid #444;
+  padding-bottom: 3px;
+}
+
+layer#content {
+  background-color: #FFF;
+  max-width: 960px;
+  padding: 30px;
+  line-height: 30px;
+  font-size: 18px;
+}
+
+layer#content header {
+  border-bottom: 1px solid #F1F1F1;
+}
+
+layer#content header p {
+  margin: 0;
+}
+
+layer#content header p:last-child {
+  font-size: 18px;
+  font-weight: normal;
+}
+
+layer#content h1 {
+  color: #333;
+}
+
+layer#content header h1 {
+  font-weight: bold;
+  font-size: 26px;
+  color: #676767;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 0;
+}
+
+layer#content header h1 img {
+  margin-right: 20px;
 }

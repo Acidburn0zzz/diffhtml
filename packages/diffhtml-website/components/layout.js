@@ -13,15 +13,20 @@ module.exports = ({ path, pages, content }) => html`
     </head>
 
     <body>
-      <layer>
+      <layer id="navigation">
         <div class="open-menu">≡</div>
         <${Nav} pages=${pages} />
       </layer>
 
-      <section id="content">
+      <layer id="content">
         <header>
-          <h1><±/> diffHTML</h1>
-          The easy-to-use HTML Virtual DOM built for the web!
+          <h1>
+            <img width="120" src="/images/diffhtml-logo.png">
+            <div>
+              <p>diffHTML</p>
+              <p>The easy-to-use Virtual DOM built for the web!</p>
+            </div>
+          </h1>
         </header>
 
         ${content}
@@ -38,7 +43,7 @@ module.exports = ({ path, pages, content }) => html`
             <span style="margin-left: 15px;"> | </span>
             <a style="margin-left: 15px; text-decoration: none;" href="https://raw.githubusercontent.com/tbranyen/diffhtml/master/LICENSE"> MIT License</a>
         </footer>
-      </section>
+      </layer>
 
       <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
       <script src="/node_modules/diffhtml/dist/diffhtml.js"></script>
