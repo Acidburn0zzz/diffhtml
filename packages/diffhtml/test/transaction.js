@@ -17,6 +17,7 @@ describe('Transaction', function() {
   });
 
   afterEach(() => {
+    release(null);
     release(this.domNode);
     validateMemory();
   });
@@ -94,7 +95,7 @@ describe('Transaction', function() {
       equal(testFnTwo.calledWith(this), true);
     });
 
-    it.only('will force abort the flow', () => {
+    it('will force abort the flow', () => {
       const testFnOne = transaction => transaction.abort(true);
       const testFnTwo = spy();
       const testFnThree = spy();
@@ -199,89 +200,116 @@ describe('Transaction', function() {
   });
 
   describe('start', () => {
-    it.skip('will start', () => {});
+    it('will start a transaction', () => {
+      const { domNode, markup, options } = this;
+      const transaction = Transaction.create(domNode, markup, options);
 
-    //start() {
-    //  Transaction.assert(this);
+      transaction.start();
 
-    //  const { domNode, state: { measure }, tasks } = this;
-    //  const takeLastTask = tasks.pop();
+      equal(transaction.tasks[0].calledOnce, true);
+    });
 
-    //  this.aborted = false;
+    it('will start a transaction with middleware', () => {
+      const { domNode, markup, options } = this;
+      const transaction = Transaction.create(domNode, markup, options);
 
-    //  // Add middleware in as tasks.
-    //  Transaction.invokeMiddleware(this);
+      const task = spy();
+      const middleware = () => task;
+      const unsubscribe = use(middleware);
 
-    //  // Measure the render flow if the user wants to track performance.
-    //  measure('render');
+      transaction.start();
 
-    //  // Push back the last task as part of ending the flow.
-    //  tasks.push(takeLastTask);
+      equal(transaction.tasks.length, 2);
+      unsubscribe();
+    });
 
-    //  return Transaction.flow(this, tasks);
-    //}
+    it('will get the return value from the flow', () => {
+      const { domNode, markup } = this;
+      const token = {};
+      const tasks = [() => token];
+      const transaction = Transaction.create(domNode, markup, { tasks });
+      const returnValue = transaction.start();
+
+      equal(returnValue, token);
+    });
   });
 
   describe('abort', () => {
-    it.skip('will abort', () => {});
+    it('will abort a transaction flow', () => {
+      const { domNode, markup, options } = this;
+      const transaction = Transaction.create(domNode, markup, options);
 
-    //const { state } = this;
+      transaction.start();
+      const returnValue = transaction.abort();
 
-    //this.aborted = true;
+      equal(returnValue, undefined);
+      equal(transaction.aborted, true);
+    });
 
-    //// Grab the last task in the flow and return, this task will be responsible
-    //// for calling `transaction.end`.
-    //return this.tasks[this.tasks.length - 1](this);
+    it('will return the last tasks return value', () => {
+      const { domNode, markup } = this;
+      const token = {};
+      const tasks = [() => token];
+      const transaction = Transaction.create(domNode, markup, { tasks });
+
+      transaction.start();
+      const returnValue = transaction.abort(true);
+
+      equal(returnValue, token);
+      equal(transaction.aborted, true);
+    });
   });
 
   describe('end', () => {
-    it.skip('will end', () => {});
+    it('will mark the transaction as completed', () => {
+      const { domNode, markup, options } = this;
+      const transaction = Transaction.create(domNode, markup, options);
 
-    //const { state, domNode, options } = this;
-    //const { measure } = state;
-    //const { inner } = options;
+      transaction.end();
 
-    //this.completed = true;
+      equal(transaction.completed, true);
+    });
 
-    //let renderScheduled = false;
+    it('will set the state', () => {
+      const { domNode, markup, options } = this;
+      const transaction = Transaction.create(domNode, markup, options);
 
-    //StateCache.forEach(cachedState => {
-    //  if (cachedState.isRendering && cachedState !== state) {
-    //    renderScheduled = true;
-    //  }
-    //});
+      transaction.end();
 
-    //// Don't attempt to clean memory if in the middle of another render.
-    //if (!renderScheduled) {
-    //  cleanMemory();
-    //}
+      equal(transaction.state.previousMarkup, '<div></div>');
+    });
 
-    //// Mark the end to rendering.
-    //measure('finalize');
-    //measure('render');
+    it('will change isRendering', () => {
+      const { domNode, markup, options } = this;
+      const transaction = Transaction.create(domNode, markup, options);
 
-    //// Cache the markup and text for the DOM node to allow for short-circuiting
-    //// future render transactions.
-    //state.previousMarkup = domNode[inner ? 'innerHTML' : 'outerHTML'];
-    //state.previousText = domNode.textContent;
 
-    //// Trigger all `onceEnded` callbacks, so that middleware can know the
-    //// transaction has ended.
-    //this.endedCallbacks.forEach(callback => callback(this));
-    //this.endedCallbacks.clear();
+      transaction.start();
+      equal(transaction.state.isRendering, undefined);
 
-    //// We are no longer rendering the previous transaction so set the state to
-    //// `false`.
-    //state.isRendering = false;
-
-    //// Try and render the next transaction if one has been saved.
-    //Transaction.renderNext(state);
-
-    //return this;
+      transaction.end();
+      equal(transaction.state.isRendering, false);
+    });
   });
 
   describe('onceEnded', () => {
-    it.skip('will trigger onceEnded callbacks', () => {});
-    //this.endedCallbacks.add(callback);
+    it('will register callbacks to run after ended', () => {
+      const { domNode, markup, options } = this;
+      const transaction = Transaction.create(domNode, markup, options);
+      const fn = () => {};
+
+      transaction.onceEnded(fn);
+      equal(transaction.endedCallbacks.size, 1);
+    });
+
+    it('will trigger onceEnded callbacks', () => {
+      const { domNode, markup, options } = this;
+      const transaction = Transaction.create(domNode, markup, options);
+      const fn = spy();
+
+      transaction.onceEnded(fn);
+      transaction.end();
+      equal(fn.calledOnce, true);
+    });
   });
 });

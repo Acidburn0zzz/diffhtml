@@ -9,6 +9,7 @@ describe('Integration: Basics', function() {
   });
 
   afterEach(function() {
+    diff.release(undefined);
     diff.release(this.fixture);
     diff.removeTransitionState();
 
