@@ -24,5 +24,6 @@ module.exports = ->
         transform: ['babelify', 'brfs', ["aliasify", { "global": true }]]
 
         alias:
-          react: 'diffhtml-react-compat'
-          'react-dom': 'diffhtml-react-compat'
+          react: 'diffhtml-react-compat/dist/cjs/index'
+          'react-dom': 'diffhtml-react-compat/dist/cjs/index'
+          'diffhtml': 'diffhtml/dist/cjs/index'
