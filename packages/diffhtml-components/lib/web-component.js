@@ -26,23 +26,23 @@ const createProps = (domNode, props = {}) => {
 };
 
 // Creates the `component.state` object.
-const createState = (domNode, newState) => {
-  return assign({}, domNode.state, newState);
-};
+const createState = (domNode, newState) => assign({}, domNode.state, newState);
 
 // Creates the `component.contxt` object.
-const createContext = (domNode) => {
-
+const createContext = (domNode, context) => {
+  /* */
+  return context;
 };
 
 // Allow tests to unbind this task, you would not typically need to do this
 // in a web application, as this code loads once and is not reloaded.
 const subscribeMiddleware = () => use(webComponentTask);
-const unsubscribeMiddleware = subscribeMiddleware();
+
+let unsubscribeMiddleware = subscribeMiddleware();
 
 export default upgradeSharedClass(class WebComponent extends HTMLElement {
   static subscribeMiddleware() {
-    return subscribeMiddleware();
+    return unsubscribeMiddleware = subscribeMiddleware();
   }
 
   static unsubscribeMiddleware() {
@@ -57,12 +57,14 @@ export default upgradeSharedClass(class WebComponent extends HTMLElement {
   [$$render]() {
     this.props = createProps(this, this.props);
 
-    innerHTML(this.shadowRoot, this.render(this.props, this.state)).then(() => {
+    const promise = innerHTML(this.shadowRoot, this.render(this.props, this.state));
+
+    return promise.then(transaction => {
       this.componentDidUpdate();
     });
   }
 
-  constructor(props) {
+  constructor(props, context) {
     super();
 
     this.props = createProps(this, props);

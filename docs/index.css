@@ -10,9 +10,16 @@ html, body {
 }
 
 code {
-  border-radius: 5px;
   font-family: "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
+  border-radius: 5px;
+  color: #4e4e4e;
+  padding: 7px;
+  padding-left: 7px !important;
   font-size: 14px;
+  background-color: #e8e8e8;
+}
+
+pre code {
   margin-right: 1px;
   padding-left: 15px !important;
   background-color: #222;
@@ -49,9 +56,10 @@ layer#navigation li.header h4 {
 layer#content {
   background-color: #FFF;
   max-width: 960px;
-  padding: 30px;
+  padding: 50px;
   line-height: 30px;
   font-size: 18px;
+  color: #333;
 }
 
 layer#content header {
@@ -68,7 +76,12 @@ layer#content header p:last-child {
 }
 
 layer#content h1 {
-  color: #333;
+  color: #444;
+  margin: 30px 0;
+}
+
+layer#content h2 {
+  color: #555;
 }
 
 layer#content header h1 {
@@ -83,4 +96,10 @@ layer#content header h1 {
 
 layer#content header h1 img {
   margin-right: 20px;
+}
+
+layer#content p.social a {
+  color: #555;
+  text-decoration: none;
+  margin-right: 10px;
 }

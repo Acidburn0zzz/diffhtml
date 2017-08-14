@@ -7,8 +7,10 @@ const { assign } = Object;
 describe('Use (Middleware)', function() {
   beforeEach(() => {
     this.unsubscribe = use(assign(() => {}, {
-      syncTreeHook: (oldTree, newTree) => {
-        if (this.syncTreeHook) this.syncTreeHook.apply(this, arguments);
+      syncTreeHook: (...args) => {
+        if (this.syncTreeHook) {
+          return this.syncTreeHook.apply(this, args);
+        }
       }
     }));
   });
@@ -33,7 +35,6 @@ describe('Use (Middleware)', function() {
     const oldTree = document.createElement('div');
     const newTree = html`<div class="test" />`;
 
-
     this.syncTreeHook = () => {
       newTree.attributes['data-track'] = 'some-new-value';
     };
@@ -41,6 +42,24 @@ describe('Use (Middleware)', function() {
     innerHTML(oldTree, newTree);
 
     equal(oldTree.outerHTML, `<div><div class="test" data-track="some-new-value"></div></div>`);
+
+    release(oldTree);
+  });
+
+  it.only('will allow replacing the newTree during sync', () => {
+    const oldTree = document.createElement('div');
+    const newTree = html`<div class="test" />`;
+
+    this.syncTreeHook = (oldTree, newTree) => {
+      console.log(newTree);
+      if (newTree.attributes.class === 'test') {
+        return html`<div data-track="some-new-value" />`;
+      }
+    };
+
+    innerHTML(oldTree, newTree);
+
+    equal(oldTree.outerHTML, `<div><div data-track="some-new-value"></div></div>`);
 
     release(oldTree);
   });

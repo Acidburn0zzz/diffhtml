@@ -25,7 +25,7 @@ function componentDidMount(newTree) {
   const parentTree = ChildParentCache.get(newTree)
   const hocTree = HOCCache.get(newTree) || HOCCache.get(parentTree);
 
-  if (typeof parentTree.rawNodeName === 'function') {
+  if (parentTree && typeof parentTree.rawNodeName === 'function') {
     const instance = InstanceCache.get(parentTree);
 
     if (instance && instance.componentDidMount) {
@@ -182,7 +182,7 @@ export default function reactLikeComponentTask(transaction) {
     }
   });
 
-  return () => {
+  return function reactTask() {
     // Look for patches to remove attrs from.
     if (transaction.patches.SET_ATTRIBUTE.length) {
       const { patches } = transaction;

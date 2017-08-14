@@ -1,17 +1,20 @@
 import { ok, equal, throws, doesNotThrow } from 'assert';
-import { innerHTML, html, use, Internals } from 'diffhtml';
+import { innerHTML, html, use, release, Internals } from 'diffhtml';
 import PropTypes from 'prop-types';
 import Component from '../lib/component';
+import validateCaches from './util/validate-caches';
 
 const { process } = Internals;
 
 describe('React Like Component', function() {
   beforeEach(() => {
+    this.fixture = document.createElement('div');
     process.env.NODE_ENV = 'development';
   });
 
-  after(() => {
-    Component.unsubscribeMiddleware();
+  afterEach(() => {
+    release(this.fixture);
+    validateCaches();
   });
 
   it('can make a component', () => {
@@ -23,10 +26,9 @@ describe('React Like Component', function() {
       }
     }
 
-    const domNode = document.createElement('div');
-    innerHTML(domNode, html`<${CustomComponent} />`);
+    innerHTML(this.fixture, html`<${CustomComponent} />`);
 
-    equal(domNode.outerHTML, '<div><div>Hello world</div></div>');
+    equal(this.fixture.outerHTML, '<div><div>Hello world</div></div>');
   });
 
   it('can return multiple elements', () => {
@@ -39,10 +41,9 @@ describe('React Like Component', function() {
       }
     }
 
-    const domNode = document.createElement('div');
-    innerHTML(domNode, html`<${CustomComponent} />`);
+    innerHTML(this.fixture, html`<${CustomComponent} />`);
 
-    equal(domNode.outerHTML, '<div><div>Hello world</div>\n          <p>Test</p></div>');
+    equal(this.fixture.outerHTML, '<div><div>Hello world</div>\n          <p>Test</p></div>');
   });
 
   describe('Lifecycle', () => {
@@ -67,12 +68,11 @@ describe('React Like Component', function() {
       }
 
       let ref = null;
-      const domNode = document.createElement('div');
-      innerHTML(domNode, html`<${CustomComponent} ref=${node => (ref = node)} />`);
+      innerHTML(this.fixture, html`<${CustomComponent} ref=${node => (ref = node)} />`);
 
-      equal(domNode.innerHTML, 'default');
+      equal(this.fixture.innerHTML, 'default');
       ref.setState({ message: 'something' });
-      equal(domNode.innerHTML, 'default');
+      equal(this.fixture.innerHTML, 'default');
       ok(wasCalled);
     });
 
@@ -89,9 +89,8 @@ describe('React Like Component', function() {
         }
       }
 
-      const domNode = document.createElement('div');
-      innerHTML(domNode, html`<${CustomComponent} someProp="true" />`);
-      innerHTML(domNode, html`<${CustomComponent} someProp="false" />`);
+      innerHTML(this.fixture, html`<${CustomComponent} someProp="true" />`);
+      innerHTML(this.fixture, html`<${CustomComponent} someProp="false" />`);
 
       ok(wasCalled);
     });
@@ -109,8 +108,7 @@ describe('React Like Component', function() {
         }
       }
 
-      const domNode = document.createElement('div');
-      innerHTML(domNode, html`<${CustomComponent} someProp="true" />`);
+      innerHTML(this.fixture, html`<${CustomComponent} someProp="true" />`);
 
       ok(wasCalled);
     });
@@ -128,9 +126,8 @@ describe('React Like Component', function() {
         }
       }
 
-      const domNode = document.createElement('div');
-      innerHTML(domNode, html`<${CustomComponent} someProp="true" />`);
-      innerHTML(domNode, html`<${CustomComponent} someProp="false" />`);
+      innerHTML(this.fixture, html`<${CustomComponent} someProp="true" />`);
+      innerHTML(this.fixture, html`<${CustomComponent} someProp="false" />`);
 
       ok(wasCalled);
     });
@@ -148,9 +145,8 @@ describe('React Like Component', function() {
         }
       }
 
-      const domNode = document.createElement('div');
-      innerHTML(domNode, html`<${CustomComponent} someProp="true" />`);
-      innerHTML(domNode, html``);
+      innerHTML(this.fixture, html`<${CustomComponent} someProp="true" />`);
+      innerHTML(this.fixture, html``);
 
       ok(wasCalled);
     });
@@ -193,13 +189,12 @@ describe('React Like Component', function() {
         customProperty: PropTypes.string.isRequired,
       };
 
-      const domNode = document.createElement('div');
       const oldConsoleError = console.error;
 
       let logCalled = false;
       console.error = () => logCalled = true;
 
-      innerHTML(domNode, html`<${CustomComponent} />`);
+      innerHTML(this.fixture, html`<${CustomComponent} />`);
       console.error = oldConsoleError;
       ok(logCalled);
     });
@@ -217,9 +212,7 @@ describe('React Like Component', function() {
         customProperty: PropTypes.string.isRequired,
       };
 
-      const domNode = document.createElement('div');
-
-      doesNotThrow(() => innerHTML(domNode, html`<${CustomComponent} />`));
+      doesNotThrow(() => innerHTML(this.fixture, html`<${CustomComponent} />`));
     });
 
   });
@@ -234,9 +227,7 @@ describe('React Like Component', function() {
         }
       }
 
-      const domNode = document.createElement('div');
-
-      innerHTML(domNode, html`<${CustomComponent}
+      innerHTML(this.fixture, html`<${CustomComponent}
         ref=${node => (refNode = node)}
       />`);
 
@@ -254,10 +245,9 @@ describe('React Like Component', function() {
         }
       }
 
-      const domNode = document.createElement('div');
-      innerHTML(domNode, html`<${CustomComponent} />`);
+      innerHTML(this.fixture, html`<${CustomComponent} />`);
       ok(refNode);
-      equal(domNode.nodeName, 'DIV');
+      equal(this.fixture.nodeName, 'DIV');
     });
   });
 
@@ -276,8 +266,7 @@ describe('React Like Component', function() {
         }
       }
 
-      const domNode = document.createElement('div');
-      innerHTML(domNode, html`<${CustomComponent} />`);
+      innerHTML(this.fixture, html`<${CustomComponent} />`);
       equal(typeof state, 'object');
     });
 
@@ -294,9 +283,8 @@ describe('React Like Component', function() {
         }
       }
 
-      const domNode = document.createElement('div');
-      innerHTML(domNode, html`<${CustomComponent} />`);
-      equal(domNode.innerHTML, 'default');
+      innerHTML(this.fixture, html`<${CustomComponent} />`);
+      equal(this.fixture.innerHTML, 'default');
     });
 
     it('can call setState to re-render the component', () => {
@@ -313,14 +301,13 @@ describe('React Like Component', function() {
       }
 
       let ref = null;
-      const domNode = document.createElement('div');
-      innerHTML(domNode, html`<${CustomComponent} ref=${node => (ref = node)} />`);
 
-      equal(domNode.innerHTML, 'default');
+      innerHTML(this.fixture, html`<${CustomComponent} ref=${node => (ref = node)} />`);
+
+      equal(this.fixture.innerHTML, 'default');
       ref.setState({ message: 'something' });
-      equal(domNode.innerHTML, 'something');
+      equal(this.fixture.innerHTML, 'something');
     });
-
   });
 
   describe('forceUpdate', () => {
@@ -338,13 +325,13 @@ describe('React Like Component', function() {
       }
 
       let ref = null;
-      const domNode = document.createElement('div');
-      innerHTML(domNode, html`<${CustomComponent} ref=${node => (ref = node)} />`);
 
-      equal(domNode.innerHTML, 'default');
+      innerHTML(this.fixture, html`<${CustomComponent} ref=${node => (ref = node)} />`);
+
+      equal(this.fixture.innerHTML, 'default');
       ref.state.message = 'something';
       ref.forceUpdate();
-      equal(domNode.innerHTML, 'something');
+      equal(this.fixture.innerHTML, 'something');
     });
   });
 
@@ -368,10 +355,9 @@ describe('React Like Component', function() {
         }
       }
 
-      const domNode = document.createElement('div');
-      innerHTML(domNode, html`<${ParentComponent} />`);
+      innerHTML(this.fixture, html`<${ParentComponent} />`);
 
-      equal(domNode.innerHTML, 'From Context');
+      equal(this.fixture.innerHTML, 'From Context');
     });
   });
 
@@ -396,11 +382,10 @@ describe('React Like Component', function() {
       };
 
       const WrappedComponent = HOC(CustomComponent);
-      const domNode = document.createElement('div');
-      innerHTML(domNode, html`<${WrappedComponent} />`);
+      innerHTML(this.fixture, html`<${WrappedComponent} />`);
 
       equal(didMount, 1);
-      equal(domNode.innerHTML, '<span>Hello world</span>');
+      equal(this.fixture.innerHTML, '<span>Hello world</span>');
     });
 
   });

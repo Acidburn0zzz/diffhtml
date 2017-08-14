@@ -14,13 +14,6 @@ export default function schedule(transaction) {
   // The state is a global store which is shared by all like-transactions.
   let { state } = transaction;
 
-
-  StateCache.forEach(otherState => {
-    if (otherState.isRendering) {
-      state = otherState;
-    }
-  });
-
   const { isRendering, activeTransaction, nextTransaction } = state;
 
   // If there is an in-flight transaction render happening, push this

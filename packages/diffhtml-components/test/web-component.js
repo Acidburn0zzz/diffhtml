@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import WebComponent from '../lib/web-component';
 import validateCaches from './util/validate-caches';
 
-describe.only('Web Component', function() {
+describe('Web Component', function() {
   beforeEach(() => {
     newJSDOMSandbox();
 
@@ -18,10 +18,6 @@ describe.only('Web Component', function() {
     validateCaches();
   });
 
-  after(() => {
-    WebComponent.unsubscribeMiddleware();
-  });
-
   it('can make a component', () => {
     class CustomComponent extends WebComponent {
       render() {
@@ -32,10 +28,10 @@ describe.only('Web Component', function() {
     }
 
     customElements.define('custom-component', CustomComponent);
-
     innerHTML(this.fixture, html`<custom-component />`);
 
     const instance = this.fixture.querySelector('custom-component');
+
     equal(instance.shadowRoot.firstChild.outerHTML, '<div>Hello world</div>');
     equal(this.fixture.innerHTML, '<custom-component></custom-component>');
   });
