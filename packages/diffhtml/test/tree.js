@@ -741,40 +741,6 @@ describe('Tree', function() {
 
         MiddlewareCache.SyncTreeHookCache.delete(hook);
       });
-
-      describe.skip('Attribute & Property Differences', () => {
-        it('will convert className to class', () => {
-          const oldTree = createTree('div');
-          const newTree = createTree('div', { className: 'test-class' });
-
-          const patches = syncTree(oldTree, newTree);
-
-          deepEqual(patches, {
-            TREE_OPS: [],
-            NODE_VALUE: [],
-            SET_ATTRIBUTE: [
-              oldTree, 'class', 'test-class',
-            ],
-            REMOVE_ATTRIBUTE: [],
-          });
-        });
-
-        it('will convert htmlFor to for', () => {
-          const oldTree = createTree('div');
-          const newTree = createTree('div', { htmlFor: 'test-for' });
-
-          const patches = syncTree(oldTree, newTree);
-
-          deepEqual(patches, {
-            TREE_OPS: [],
-            NODE_VALUE: [],
-            SET_ATTRIBUTE: [
-              oldTree, 'for', 'test-for',
-            ],
-            REMOVE_ATTRIBUTE: [],
-          });
-        });
-      });
     });
 
     describe('Elements (keyed)', () => {

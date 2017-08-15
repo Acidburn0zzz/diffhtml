@@ -70,12 +70,15 @@ export default function syncTree(oldTree, newTree, patches, parentTree, specialC
     // If the consumer returned a value and it doesn't equal the existing tree,
     // then splice it into the parent (if it exists) and run a sync.
     if (retVal && retVal !== newTree) {
-      newTree.childNodes = [].concat(retVal);
-      // Use the oldTree (if we have it) to short-circuit renders if the middleware
-      // returns oldTree itself. This keeps syncTree from generating patches
-      // for attribute changes that don't differ from the current state.
-      syncTree(oldTree !== empty ? oldTree : null, retVal, patches, newTree);
-      newTree = retVal;
+      // Reuse the existing VTree and merge into this object, since it has
+      // already been protected.
+      assign(newTree, retVal);
+
+      // Use the oldTree (if we have it) to short-circuit renders if the
+      // middleware returns oldTree itself. This keeps syncTree from generating
+      // patches for attribute changes that don't differ from the current
+      // state.
+      syncTree(oldTree !== empty ? oldTree : null, retVal, patches, parentTree);
     }
   });
 
