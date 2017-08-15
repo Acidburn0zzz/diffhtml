@@ -1,5 +1,5 @@
 import { equal, throws } from 'assert';
-import { html, innerHTML, use, release } from '../lib/index';
+import { html, innerHTML, outerHTML, use, release } from '../lib/index';
 import validateMemory from './util/validateMemory';
 
 const { assign } = Object;
@@ -59,6 +59,23 @@ describe('Use (Middleware)', function() {
     innerHTML(oldTree, newTree);
 
     equal(oldTree.innerHTML, `<div data-track="some-new-value"></div>`);
+
+    release(oldTree);
+  });
+
+  it('will allow blackboxing an existing tree to avoid diffing', () => {
+    const oldTree = document.createElement('div');
+    const newTree = html`<div class="test" />`;
+
+    this.syncTreeHook = (oldTree, newTree) => {
+      if (newTree.attributes.class === 'test') {
+        return oldTree;
+      }
+    };
+
+    outerHTML(oldTree, newTree);
+
+    equal(oldTree.outerHTML, `<div></div>`);
 
     release(oldTree);
   });
