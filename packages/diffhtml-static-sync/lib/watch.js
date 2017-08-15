@@ -71,8 +71,12 @@ webServer.use((req, res, next) => {
   const path = newExt => {
     // If the path has an extension pass through.
     if (ext && ext !== '.html') {
-      console.log(ext);
       throw null;
+    }
+
+    // If dealing with HTML, send the client script.
+    if (ext === '.html') {
+      return url;
     }
 
     return `${isRoot ? 'index' : url}.${newExt}`;
