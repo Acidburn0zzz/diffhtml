@@ -164,7 +164,7 @@
       <layer id="content">
         <header>
           <h1>
-            <img width="120" src="/images/diffhtml-logo.png"></img>
+            <a href="/"><img width="120" src="/images/diffhtml-logo.png"></img></a>
             <div>
               <p>diffHTML</p>
               <p>The easy-to-use Virtual DOM built for the web!</p>
@@ -258,10 +258,9 @@ a render.</li>
 <p><a name="release"></a></p>
 <h2 id="release-domnode-">release (domNode)</h2>
 <h3 id="purpose">Purpose</h3>
-<p>Used to completely clean up references internally. Typically you render into
-an element on the page and let diffHTML control everything around or inside it,
-but the element itself is never removed. This method is useful in the case
-where the element is removed.</p>
+<p>Use this method if you need to clean up memory allocations and anything else
+internal to diffHTML associated with your element. This is very useful for unit
+testing and general cleanup when you&#39;re done with an element.</p>
 <h3 id="arguments">Arguments</h3>
 <p>The two required inputs are a reference element and new element to compare.
 Although &quot;element&quot; is used, the actual input can be of various input types

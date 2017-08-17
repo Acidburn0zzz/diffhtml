@@ -1,6 +1,7 @@
 import Pool from './pool';
-import { NodeCache, StateCache } from './caches';
+import { NodeCache, StateCache, MiddlewareCache } from './caches';
 
+const { ReleaseHookCache } = MiddlewareCache;
 const { memory, protect, unprotect } = Pool;
 
 /**
@@ -28,6 +29,10 @@ export function protectVTree(vTree) {
 export function unprotectVTree(vTree) {
   unprotect(vTree);
 
+  if (ReleaseHookCache.size) {
+    ReleaseHookCache.forEach(fn => fn(vTree));
+  }
+
   for (let i = 0; i < vTree.childNodes.length; i++) {
     unprotectVTree(vTree.childNodes[i]);
   }
@@ -50,6 +55,10 @@ export function cleanMemory(isBusy = false) {
   NodeCache.forEach((node, vTree) => {
     if (!memory.protected.has(vTree)) {
       NodeCache.delete(vTree);
+
+      if (ReleaseHookCache.size) {
+        ReleaseHookCache.forEach(fn => fn(vTree));
+      }
     }
   });
 }

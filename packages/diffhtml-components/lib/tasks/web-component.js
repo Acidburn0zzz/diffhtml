@@ -85,3 +85,7 @@ webComponentTask.createNodeHook = vTree => {
     return new Constructor(vTree.attributes);
   }
 };
+
+webComponentTask.releaseHook = vTree => {
+
+};

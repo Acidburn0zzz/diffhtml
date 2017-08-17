@@ -4,7 +4,6 @@ import { use, innerHTML, outerHTML, Internals } from 'diffhtml';
 import reactLikeComponentTask from './tasks/react-like-component';
 import upgradeSharedClass from './shared/upgrade-shared-class';
 import {
-  ChildParentCache,
   ComponentTreeCache,
   InstanceCache,
 } from './util/caches';
@@ -31,7 +30,6 @@ class Component {
   static unsubscribeMiddleware() {
     unsubscribe();
 
-    ChildParentCache.clear();
     ComponentTreeCache.clear();
     InstanceCache.clear();
   }

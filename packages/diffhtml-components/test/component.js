@@ -47,7 +47,7 @@ describe('React Like Component', function() {
   });
 
   describe('Lifecycle', () => {
-    it('can map to shouldComponentUpdate', () => {
+    it.only('can map to shouldComponentUpdate', () => {
       let wasCalled = false;
 
       class CustomComponent extends Component {
@@ -69,6 +69,7 @@ describe('React Like Component', function() {
 
       let ref = null;
       innerHTML(this.fixture, html`<${CustomComponent} ref=${node => (ref = node)} />`);
+      console.log(ref);
 
       equal(this.fixture.innerHTML, 'default');
       ref.setState({ message: 'something' });

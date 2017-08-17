@@ -101,10 +101,9 @@ This argument is overloaded. Can be one of many types:
 
 ### Purpose
 
-Used to completely clean up references internally. Typically you render into
-an element on the page and let diffHTML control everything around or inside it,
-but the element itself is never removed. This method is useful in the case
-where the element is removed.
+Use this method if you need to clean up memory allocations and anything else
+internal to diffHTML associated with your element. This is very useful for unit
+testing and general cleanup when you're done with an element.
 
 ### Arguments
 
