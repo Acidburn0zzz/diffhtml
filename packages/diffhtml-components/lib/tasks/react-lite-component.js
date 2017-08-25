@@ -1,6 +1,12 @@
 import { release, createTree, Internals } from 'diffhtml';
+import renderComponent from '../shared/render-component';
+import reconcileComponentTree from '../shared/reconcile-component-tree';
+import onceEnded from '../shared/once-ended';
+import releaseHook from '../shared/release-hook';
+import { InstanceCache, ComponentTreeCache } from '../util/caches';
 
 const { NodeCache } = Internals;
+const { assign } = Object;
 
 //import getContext from '../util/get-context';
 //import {
@@ -10,7 +16,6 @@ const { NodeCache } = Internals;
 //
 //const { NodeCache } = Internals;
 //const { keys, assign } = Object;
-//const uppercaseEx = /[A-Z]/g;
 //
 //function triggerRef(ref, node, instance) {
 //  if (typeof ref === 'function') {
@@ -21,40 +26,6 @@ const { NodeCache } = Internals;
 //  }
 //}
 //
-//function componentDidMount(newTree) {
-//  console.log('here');
-//
-//  const instance = InstanceCache.get(newTree);
-//
-//  if (parentTree && typeof parentTree.rawNodeName === 'function') {
-//    const instance = InstanceCache.get(parentTree);
-//
-//    if (instance && instance.componentDidMount) {
-//      instance.componentDidMount();
-//    }
-//  }
-//
-//  if (hocTree) {
-//    const instance = InstanceCache.get(hocTree);
-//
-//    if (instance && instance.componentDidMount) {
-//      instance.componentDidMount();
-//    }
-//  }
-//
-//  if (newTree.attributes.ref) {
-//    triggerRef(newTree.attributes.ref, NodeCache.get(newTree), instance);
-//  }
-//
-//  newTree.childNodes.forEach(componentDidMount);
-//
-//  if (!instance) {
-//    return;
-//  }
-//
-//  const { ref } = instance.props;
-//  triggerRef(ref, instance, instance);
-//}
 //
 //function componentDidUnmount(oldTree) {
 //  const instance = InstanceCache.get(oldTree);
@@ -83,105 +54,24 @@ const { NodeCache } = Internals;
 //}
 //
 
-const makeComponentTree = vTree => {
-  if (!vTree) {
-    return vTree;
-  }
 
-  for (let i = 0; i < vTree.childNodes.length; i++) {
 
-  }
-};
+export default options => assign(function reactLiteComponentTask(transaction) {
+  const { state, markup } = transaction;
 
-export default function reactLikeComponentTask(transaction) {
-  console.log(transaction);
-//  transaction.onceEnded(() => {
-//    if (transaction.aborted) {
-//      return;
-//    }
-//
-//    const { patches } = transaction;
-//
-//    if (patches.TREE_OPS && patches.TREE_OPS.length) {
-//      const { SET_ATTRIBUTE } = patches;
-//      uppercaseEx.lastIndex = 0;
-//
-//      if (SET_ATTRIBUTE && SET_ATTRIBUTE.length) {
-//        for (let i = 0; i < SET_ATTRIBUTE.length; i += 3) {
-//          const oldTree = SET_ATTRIBUTE[i];
-//          let name = SET_ATTRIBUTE[i + 1];
-//          const value = SET_ATTRIBUTE[i + 2];
-//
-//          // Normalize uppercase attributes.
-//          if (uppercaseEx.test(name)) {
-//            uppercaseEx.lastIndex = 0;
-//            name = name.replace(uppercaseEx, ch => `-${ch.toLowerCase()}`);
-//
-//            if (value && typeof value === 'string') {
-//              NodeCache.get(oldTree).setAttribute(name, value);
-//            }
-//          }
-//        }
-//      }
-//
-//      patches.TREE_OPS.forEach(({
-//        INSERT_BEFORE,
-//        REPLACE_CHILD,
-//        REMOVE_CHILD,
-//      }) => {
-//        if (INSERT_BEFORE) {
-//          for (let i = 0; i < INSERT_BEFORE.length; i += 3) {
-//            const newTree = INSERT_BEFORE[i + 1];
-//
-//            if (typeof newTree.rawNodeName !== 'function') {
-//              continue;
-//            }
-//
-//            componentDidMount(newTree);
-//          }
-//        }
-//
-//        if (REPLACE_CHILD) {
-//          for (let i = 0; i < REPLACE_CHILD.length; i += 2) {
-//            const newTree = REPLACE_CHILD[i];
-//            const oldTree = REPLACE_CHILD[i + 1];
-//
-//            if (typeof newTree.rawNodeName !== 'function' && typeof oldTree.rawNodeName !== 'function') {
-//              continue;
-//            }
-//
-//            if (InstanceCache.has(oldTree)) {
-//              ComponentTreeCache.delete(InstanceCache.get(oldTree));
-//              InstanceCache.delete(oldTree);
-//            }
-//
-//            InstanceCache.delete(oldTree);
-//            componentDidMount(newTree);
-//          }
-//        }
-//
-//        if (REMOVE_CHILD) {
-//          for (let i = 0; i < REMOVE_CHILD.length; i += 1) {
-//            const oldTree = REMOVE_CHILD[i];
-//
-//            if (typeof oldTree.rawNodeName !== 'function') {
-//              continue;
-//            }
-//
-//            const oldInstance = InstanceCache.has(oldTree);
-//
-//            componentDidUnmount(oldTree);
-//
-//            if (oldInstance) {
-//              ComponentTreeCache.delete(oldInstance);
-//              InstanceCache.delete(oldTree);
-//            }
-//          }
-//        }
-//      });
-//    }
-//  });
-//
+  // Compare the two trees and reconcile any high level changes that must
+  // occur. This also allows for `componentWillReceiveProps` and other
+  // lifecycle events to be triggered.
+  const {
+    oldComponentTree,
+    newTree,
+  } = reconcileComponentTree(state.oldComponentTree, markup);
+
+  state.oldComponentTree = oldComponentTree;
+  transaction.newTree = newTree;
+
+  transaction.onceEnded(onceEnded);
+
 //  return function reactTask() {
 //    // Look for patches to remove attrs from.
 //    if (transaction.patches.SET_ATTRIBUTE.length) {
@@ -205,7 +95,7 @@ export default function reactLikeComponentTask(transaction) {
 //      patches.SET_ATTRIBUTE = newSetAttr;
 //    }
 //  };
-}
+}, { releaseHook });
 //
 //function renderComponent({ oldTree, newTree, oldChild, newChild }) {
 //  let oldInstanceCache = null;
@@ -302,15 +192,7 @@ export default function reactLikeComponentTask(transaction) {
 //  return renderTree;
 //}
 //
-//reactLikeComponentTask.releaseHook = vTree => {
-//  const instance = InstanceCache.get(vTree);
-//
-//  if (instance) {
-//    InstanceCache.delete(childInstance ? vTree : parentTree);
-//    ComponentTreeCache.delete(instance);
-//  }
-//};
-//
+
 //reactLikeComponentTask.syncTreeHook = (oldTree, newTree, keys, parentTree) => {
 //  // Top level component to process.
 //  if (newTree && typeof newTree.rawNodeName === 'function') {

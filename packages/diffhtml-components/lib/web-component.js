@@ -5,6 +5,9 @@ import upgradeSharedClass from './shared/upgrade-shared-class';
 import webComponentTask from './tasks/web-component';
 import { $$render } from './util/symbols';
 
+const root = typeof window !== 'undefined' ? window : global;
+const nullFunc = function() {};
+const HTMLElementCtor = root.HTMLElement || nullFunc;
 const Debounce = new WeakMap();
 const { setPrototypeOf, assign, keys } = Object;
 
@@ -22,7 +25,7 @@ const createProps = (domNode, props = {}) => {
     [attr]: attr in domNode ? domNode[attr] : domNode.getAttribute(attr) || initialProps[attr],
   }), initialProps);
 
-  return Object.assign({}, props, incoming);
+  return assign({}, props, incoming);
 };
 
 // Creates the `component.state` object.
@@ -34,22 +37,7 @@ const createContext = (domNode, context) => {
   return context;
 };
 
-// Allow tests to unbind this task, you would not typically need to do this
-// in a web application, as this code loads once and is not reloaded.
-const subscribeMiddleware = () => use(webComponentTask);
-
-let unsubscribeMiddleware = subscribeMiddleware();
-
-export default upgradeSharedClass(class WebComponent extends HTMLElement {
-  static subscribeMiddleware() {
-    return unsubscribeMiddleware = subscribeMiddleware();
-  }
-
-  static unsubscribeMiddleware() {
-    unsubscribeMiddleware();
-    return subscribeMiddleware;
-  }
-
+export default upgradeSharedClass(class WebComponent extends HTMLElementCtor {
   static get observedAttributes() {
     return getObserved(this).map(key => key.toLowerCase());
   }
@@ -65,6 +53,10 @@ export default upgradeSharedClass(class WebComponent extends HTMLElement {
   }
 
   constructor(props, context) {
+    if (HTMLElementCtor === nullFunc) {
+      throw new Error('Web Components require a valid browser environment');
+    }
+
     super();
 
     this.props = createProps(this, props);

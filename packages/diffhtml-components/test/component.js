@@ -6,7 +6,7 @@ import validateCaches from './util/validate-caches';
 
 const { process } = Internals;
 
-describe('React Like Component', function() {
+describe.only('React Lite Component', function() {
   beforeEach(() => {
     this.fixture = document.createElement('div');
     process.env.NODE_ENV = 'development';
@@ -17,7 +17,7 @@ describe('React Like Component', function() {
     validateCaches();
   });
 
-  it('can make a component', () => {
+  it('can render a component', () => {
     class CustomComponent extends Component {
       render() {
         return html`
@@ -46,8 +46,30 @@ describe('React Like Component', function() {
     equal(this.fixture.outerHTML, '<div><div>Hello world</div>\n          <p>Test</p></div>');
   });
 
+  it.only('can have a component return a component aka HoC', () => {
+    class CustomComponent extends Component {
+      render() {
+        return message;
+      }
+    }
+
+    const embolden = WrappedComponent => class EmboldenComponent {
+      render() {
+        return html`
+          <b><${WrappedComponent} message="Hello world" /></b>
+        `;
+      }
+    };
+
+    const BoldCustomComponent = embolden(CustomComponent);
+
+    innerHTML(this.fixture, html`<${BoldCustomComponent} />`);
+
+    equal(this.fixture.outerHTML, '<b>Hello world</b>');
+  });
+
   describe('Lifecycle', () => {
-    it.only('can map to shouldComponentUpdate', () => {
+    it('can map to shouldComponentUpdate', () => {
       let wasCalled = false;
 
       class CustomComponent extends Component {

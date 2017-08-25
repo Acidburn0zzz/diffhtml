@@ -161,7 +161,7 @@
   </ul>
       </layer>
 
-      <layer id="content">
+      <layer id="main">
         <header>
           <h1>
             <a href="/"><img width="120" src="/images/diffhtml-logo.png"></img></a>
@@ -172,7 +172,8 @@
           </h1>
         </header>
 
-        <h1 id="api">API</h1>
+        <section id="content">
+          <h1 id="api">API</h1>
 <p>The core API is designed to be a minimal and extensible.</p>
 <h2 id="innerhtml-element-markup-options-a-name-inner-html-">innerHTML (element, markup=&#39;&#39;, options={}) <a name="inner-html"></a></h2>
 <pre><code class="lang-js">import { innerHTML } from &#39;diffhtml&#39;;
@@ -286,8 +287,17 @@ from the globally exported <code>diff</code> object. Remember to wrap your code 
 <pre><code class="lang-js">diff.innerHTML(document.body, &#39;&lt;span&gt;Hello world&lt;/span&gt;&#39;)
 </code></pre>
 <h3 id="example-latest-es-specification-">Example (Latest ES Specification)</h3>
+        </section>
 
-        <a href="https://github.com/tbranyen/diffhtml/edit/improve-docs/packages/diffhtml-website/pages/api.md">
+        <a href="https://github.com/tbranyen/diffhtml/edit/master/packages/diffhtml-website/pages/api.md" style="
+            text-align: center;
+            color: #333;
+            text-decoration: none;
+            width: 100%;
+            display: inline-block;
+            padding: 40px;
+            box-sizing: border-box;
+          ">
           Edit on GitHub &nbsp; <span class="fa fa-github"></span>
         </a>
 

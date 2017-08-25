@@ -18,7 +18,7 @@ module.exports = ({ path, pages, content }) => html`
         <${Nav} pages=${pages} />
       </layer>
 
-      <layer id="content">
+      <layer id="main">
         <header>
           <h1>
             <a href="/"><img width="120" src="/images/diffhtml-logo.png"></a>
@@ -29,9 +29,22 @@ module.exports = ({ path, pages, content }) => html`
           </h1>
         </header>
 
-        ${content}
+        <section id="content">
+          ${content}
+        </section>
 
-        <a href=${`https://github.com/tbranyen/diffhtml/edit/improve-docs/packages/diffhtml-website/pages/${path.replace('.html', '.md')}`}>
+        <a
+          href=${`https://github.com/tbranyen/diffhtml/edit/master/packages/diffhtml-website/pages/${path.replace('.html', '.md')}`}
+          style=${`
+            text-align: center;
+            color: #333;
+            text-decoration: none;
+            width: 100%;
+            display: inline-block;
+            padding: 40px;
+            box-sizing: border-box;
+          `}
+        >
           Edit on GitHub &nbsp; <span class="fa fa-github"></span>
         </a>
 

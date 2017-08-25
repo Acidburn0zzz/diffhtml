@@ -1,57 +1,75 @@
 import { Internals } from 'diffhtml';
+import renderComponent from '../shared/render-component';
+import reconcileComponentTree from '../shared/reconcile-component-tree';
+import onceEnded from '../shared/once-ended';
 
 const { NodeCache } = Internals;
 const { assign } = Object;
 
 export default function webComponentTask(transaction) {
-  return transaction.onceEnded(() => {
-    if (transaction.aborted) {
-      return;
-    }
+  const { state, markup } = transaction;
 
-    const { patches } = transaction;
+  // Compare the two trees and reconcile any high level changes that must
+  // occur. This also allows for `componentWillReceiveProps` and other
+  // lifecycle events to be triggered.
+  const {
+    oldComponentTree,
+    newTree,
+  } = reconcileComponentTree(state.oldComponentTree, markup);
 
-    if (patches.TREE_OPS && patches.TREE_OPS.length) {
-      patches.TREE_OPS.forEach(({
-        INSERT_BEFORE,
-        REPLACE_CHILD,
-        REMOVE_CHILD,
-      }) => {
-        if (INSERT_BEFORE) {
-          for (let i = 0; i < INSERT_BEFORE.length; i += 3) {
-            const newTree = INSERT_BEFORE[i + 1];
-            const instance = NodeCache.get(newTree);
+  state.oldComponentTree = oldComponentTree;
+  transaction.newTree = newTree;
 
-            if (instance && instance.componentDidMount) {
-              instance.componentDidMount();
-            }
-          }
-        }
+  transaction.onceEnded(onceEnded);
 
-        if (REPLACE_CHILD) {
-          for (let i = 0; i < REPLACE_CHILD.length; i += 2) {
-            const newTree = REPLACE_CHILD[i];
-            const instance = NodeCache.get(newTree);
+  //return transaction.onceEnded(() => {
+  //  if (transaction.aborted) {
+  //    return;
+  //  }
 
-            if (instance && instance.componentDidMount) {
-              instance.componentDidMount();
-            }
-          }
-        }
+  //  const { patches } = transaction;
 
-        if (REMOVE_CHILD) {
-          for (let i = 0; i < REMOVE_CHILD.length; i += 1) {
-            const oldTree = REMOVE_CHILD[i];
-            const instance = NodeCache.get(oldTree);
+  //  if (patches.TREE_OPS && patches.TREE_OPS.length) {
+  //    patches.TREE_OPS.forEach(({
+  //      INSERT_BEFORE,
+  //      REPLACE_CHILD,
+  //      REMOVE_CHILD,
+  //    }) => {
+  //      if (INSERT_BEFORE) {
+  //        for (let i = 0; i < INSERT_BEFORE.length; i += 3) {
+  //          const newTree = INSERT_BEFORE[i + 1];
+  //          const instance = NodeCache.get(newTree);
 
-            if (instance && instance.componentDidUnmount) {
-              instance.componentDidUnmount();
-            }
-          }
-        }
-      });
-    }
-  });
+  //          if (instance && instance.componentDidMount) {
+  //            instance.componentDidMount();
+  //          }
+  //        }
+  //      }
+
+  //      if (REPLACE_CHILD) {
+  //        for (let i = 0; i < REPLACE_CHILD.length; i += 2) {
+  //          const newTree = REPLACE_CHILD[i];
+  //          const instance = NodeCache.get(newTree);
+
+  //          if (instance && instance.componentDidMount) {
+  //            instance.componentDidMount();
+  //          }
+  //        }
+  //      }
+
+  //      if (REMOVE_CHILD) {
+  //        for (let i = 0; i < REMOVE_CHILD.length; i += 1) {
+  //          const oldTree = REMOVE_CHILD[i];
+  //          const instance = NodeCache.get(oldTree);
+
+  //          if (instance && instance.componentDidUnmount) {
+  //            instance.componentDidUnmount();
+  //          }
+  //        }
+  //      }
+  //    });
+  //  }
+  //});
 }
 
 //webComponentTask.syncTreeHook = (oldTree, newTree) => {
@@ -87,5 +105,4 @@ webComponentTask.createNodeHook = vTree => {
 };
 
 webComponentTask.releaseHook = vTree => {
-
 };
