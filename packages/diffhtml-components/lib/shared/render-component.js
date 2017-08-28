@@ -1,6 +1,7 @@
 import { ComponentTreeCache, InstanceCache } from '../util/caches';
+import { $$vTree } from '../util/symbols';
 
-export default function renderComponent(vTree, context) {
+export default function renderComponent(vTree, context = {}) {
   const Component = vTree.rawNodeName;
   const props = vTree.attributes;
   const isNewable = Component.prototype && Component.prototype.render;
@@ -23,6 +24,7 @@ export default function renderComponent(vTree, context) {
   else if (isNewable) {
     instance = new Component(props, context);
     InstanceCache.set(vTree, instance);
+    instance[$$vTree] = vTree;
   }
 
   // Support stateless functions, stateless classes, and stateful classes.
@@ -41,14 +43,9 @@ export default function renderComponent(vTree, context) {
   // is used to trigger lifecycle events.
   for (let i = 0; i < childNodes.length; i++) {
     const newTree = childNodes[i];
-    console.log(newTree);
 
-    if (typeof newTree.rawNodeName !== 'function') {
-      ComponentTreeCache.set(childNodes[i], vTree);
-    }
-    else {
-      console.log(newTree);
-      renderComponent(newTree, context);
+    if (newTree.nodeType !== 11) {
+      ComponentTreeCache.set(newTree, vTree);
     }
   }
 

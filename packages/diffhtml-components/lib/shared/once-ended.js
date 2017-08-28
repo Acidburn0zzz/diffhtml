@@ -53,7 +53,9 @@ export default transaction => {
             continue;
           }
 
-          if (InstanceCache.has(oldTree)) {
+          const componentTree = ComponentTreeCache.get(oldTree);
+
+          if (InstanceCache.has(componentTree)) {
             ComponentTreeCache.delete(InstanceCache.get(oldTree));
             InstanceCache.delete(oldTree);
           }

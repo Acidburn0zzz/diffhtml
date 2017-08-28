@@ -721,6 +721,7 @@ describe('Tree', function() {
           oldTree && oldTree.attributes && oldTree.attributes.class === 'text' ?
             oldTree :
             newTree;
+
         MiddlewareCache.SyncTreeHookCache.add(hook);
 
         const oldTree = parse(`

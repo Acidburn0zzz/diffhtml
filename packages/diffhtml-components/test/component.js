@@ -6,7 +6,7 @@ import validateCaches from './util/validate-caches';
 
 const { process } = Internals;
 
-describe.only('React Lite Component', function() {
+describe('Component implementation', function() {
   beforeEach(() => {
     this.fixture = document.createElement('div');
     process.env.NODE_ENV = 'development';
@@ -17,7 +17,7 @@ describe.only('React Lite Component', function() {
     validateCaches();
   });
 
-  it('can render a component', () => {
+  it.only('can render a component', () => {
     class CustomComponent extends Component {
       render() {
         return html`
@@ -31,7 +31,7 @@ describe.only('React Lite Component', function() {
     equal(this.fixture.outerHTML, '<div><div>Hello world</div></div>');
   });
 
-  it('can return multiple elements', () => {
+  it('can return multiple top level elements', () => {
     class CustomComponent extends Component {
       render() {
         return html`
@@ -43,13 +43,13 @@ describe.only('React Lite Component', function() {
 
     innerHTML(this.fixture, html`<${CustomComponent} />`);
 
-    equal(this.fixture.outerHTML, '<div><div>Hello world</div>\n          <p>Test</p></div>');
+    equal(this.fixture.innerHTML, `<div>Hello world</div>\n          <p>Test</p>`);
   });
 
-  it.only('can have a component return a component aka HoC', () => {
+  it('can have a component return a component aka HoC', () => {
     class CustomComponent extends Component {
-      render() {
-        return message;
+      render({ message }) {
+        return html`${message}`;
       }
     }
 
@@ -65,7 +65,7 @@ describe.only('React Lite Component', function() {
 
     innerHTML(this.fixture, html`<${BoldCustomComponent} />`);
 
-    equal(this.fixture.outerHTML, '<b>Hello world</b>');
+    equal(this.fixture.outerHTML, '<div><b>Hello world</b></div>');
   });
 
   describe('Lifecycle', () => {
@@ -91,8 +91,6 @@ describe.only('React Lite Component', function() {
 
       let ref = null;
       innerHTML(this.fixture, html`<${CustomComponent} ref=${node => (ref = node)} />`);
-      console.log(ref);
-
       equal(this.fixture.innerHTML, 'default');
       ref.setState({ message: 'something' });
       equal(this.fixture.innerHTML, 'default');

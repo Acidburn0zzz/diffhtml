@@ -2,7 +2,6 @@ import process from './util/process';
 import { createTree, innerHTML, use } from 'diffhtml';
 import PropTypes from 'prop-types';
 import upgradeSharedClass from './shared/upgrade-shared-class';
-import webComponentTask from './tasks/web-component';
 import { $$render } from './util/symbols';
 
 const root = typeof window !== 'undefined' ? window : global;
@@ -31,12 +30,6 @@ const createProps = (domNode, props = {}) => {
 // Creates the `component.state` object.
 const createState = (domNode, newState) => assign({}, domNode.state, newState);
 
-// Creates the `component.contxt` object.
-const createContext = (domNode, context) => {
-  /* */
-  return context;
-};
-
 export default upgradeSharedClass(class WebComponent extends HTMLElementCtor {
   static get observedAttributes() {
     return getObserved(this).map(key => key.toLowerCase());
@@ -54,14 +47,13 @@ export default upgradeSharedClass(class WebComponent extends HTMLElementCtor {
 
   constructor(props, context) {
     if (HTMLElementCtor === nullFunc) {
-      throw new Error('Web Components require a valid browser environment');
+      throw new Error('Custom Elements require a valid browser environment');
     }
 
     super();
 
     this.props = createProps(this, props);
     this.state = createState(this);
-    this.context = createContext(this);
 
     const {
       defaultProps = {},

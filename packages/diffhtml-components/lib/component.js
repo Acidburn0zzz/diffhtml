@@ -1,39 +1,18 @@
 import process from './util/process';
 import PropTypes from 'prop-types';
-import { use, innerHTML, outerHTML, Internals } from 'diffhtml';
-import reactLiteComponentTask from './tasks/react-lite-component';
+import { outerHTML, Internals } from 'diffhtml';
 import upgradeSharedClass from './shared/upgrade-shared-class';
-import { ComponentTreeCache, InstanceCache } from './util/caches';
-import getContext from './util/get-context';
-import { $$render } from './util/symbols';
+import { ComponentTreeCache } from './util/caches';
+import { $$render, $$vTree } from './util/symbols';
 
-const { createNode, NodeCache } = Internals;
+const { createNode } = Internals;
 const { keys, assign } = Object;
 
-// Allow tests to unbind this task, you would not typically need to do this
-// in a web application, as this code loads once and is not reloaded.
-let unsubscribe = null;
-
 class Component {
-  // Registers a custom middleware to help map the diffHTML render lifecycle
-  // internals to React. This currently isn't necessary for the Web Component
-  // implementation since they inherently provide lifecycle hooks.
-  static subscribeMiddleware(options) {
-    if (unsubscribe) {
-      unsubscribe();
-    }
-
-    unsubscribe = use(reactLiteComponentTask(options));
-  }
-
-  static unsubscribeMiddleware() {
-    unsubscribe();
-    ComponentTreeCache.clear();
-    InstanceCache.clear();
-  }
+  [$$vTree] = null;
 
   [$$render]() {
-    const vTree = ComponentTreeCache.get(this);
+    const vTree = this[$$vTree];
     const domNode = createNode(vTree);
     const renderTree = this.render();
 
@@ -81,8 +60,10 @@ class Component {
   }
 }
 
-// Automatically subscribe the React Component middleware.
-Component.subscribeMiddleware();
-
 // Wrap this base class with shared methods.
-export default upgradeSharedClass(Component);
+const upgradedClass = upgradeSharedClass(Component);
+
+// Automatically subscribe the React Component middleware.
+upgradedClass.subscribeMiddleware();
+
+export default upgradedClass;

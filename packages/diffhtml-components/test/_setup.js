@@ -16,5 +16,5 @@ newJSDOMSandbox();
 
 after(() => {
   require('../lib/component').unsubscribeMiddleware();
-  //require('../lib/web-component').unsubscribeMiddleware();
+  require('../lib/web-component').unsubscribeMiddleware();
 });

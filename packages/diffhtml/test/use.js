@@ -46,7 +46,7 @@ describe('Use (Middleware)', function() {
     release(oldTree);
   });
 
-  it('will allow replacing the newTree during sync', () => {
+  it.only('will allow replacing the newTree during sync', () => {
     const oldTree = document.createElement('div');
     const newTree = html`<div class="test" />`;
 
