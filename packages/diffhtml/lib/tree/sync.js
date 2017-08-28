@@ -55,7 +55,6 @@ export default function syncTree(oldTree, newTree, patches, parentTree, specialC
   }
 
   let shortCircuit = false;
-  let retVal = null;
 
   // Create new arrays for patches or use existing from a recursive call.
   patches = patches || {
@@ -84,40 +83,18 @@ export default function syncTree(oldTree, newTree, patches, parentTree, specialC
     // Call the user provided middleware function for a single root node. Allow
     // the consumer to specify a return value of a different VTree (useful for
     // components).
-    retVal = fn(oldTree, newTree, keysLookup, parentTree);
+    let retVal = fn(oldTree, newTree, keysLookup, parentTree);
 
     // If the consumer returned a value and it doesn't equal the existing tree,
     // then splice it into the parent (if it exists) and run a sync.
     if (retVal && retVal !== newTree) {
-      shortCircuit = true;
-
-      // Swap out the Node in the patchsets.
-      for (let i = 0; i <= patchset.INSERT_BEFORE.length; i += 3) {
-        const refTree = patchset.INSERT_BEFORE[i + 1];
-
-        if (newTree === refTree) {
-          patchset.INSERT_BEFORE[i + 1] = retVal;
-        }
-      }
-
-      for (let i = 0; i <= patchset.REPLACE_CHILD.length; i += 2) {
-        const refTree = patchset.REPLACE_CHILD[i];
-
-        if (newTree === refTree) {
-          patchset.REPLACE_CHILD[i] = retVal;
-        }
-      }
-
-      syncTree(oldTree, retVal, patches, parentTree);
+      // Synchronize this new tree.
+      newTree = retVal;
     }
     else if (retVal && retVal === oldTree) {
       shortCircuit = true;
     }
   });
-
-  if (shortCircuit) {
-      console.log(new Error().stack);
-  }
 
   if (shortCircuit) {
     return patches;

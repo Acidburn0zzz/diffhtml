@@ -46,14 +46,16 @@ describe('Use (Middleware)', function() {
     release(oldTree);
   });
 
-  it.only('will allow replacing the newTree during sync', () => {
+  it('will allow replacing the newTree during sync', () => {
     const oldTree = document.createElement('div');
     const newTree = html`<div class="test" />`;
 
     this.syncTreeHook = (oldTree, newTree) => {
-      if (newTree.attributes.class === 'test') {
-        return html`<div data-track="some-new-value" />`;
-      }
+      newTree.childNodes.forEach((childNode, i) => {
+        if (childNode.attributes.class === 'test') {
+          newTree.childNodes[i] =  html`<div data-track="some-new-value" />`;
+        }
+      });
     };
 
     innerHTML(oldTree, newTree);
