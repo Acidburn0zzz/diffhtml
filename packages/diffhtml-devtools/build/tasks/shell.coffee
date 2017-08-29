@@ -32,6 +32,7 @@ module.exports = ->
         '--pack-extension=' + path.resolve('chrome-extension/dist/extension')
         '--pack-extension-key=' + path.resolve('chrome-extension/key.pem')
         '--no-message-box'
+        '--disable-gpu'
       ].join(' ')
 
     's3':
