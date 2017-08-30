@@ -1,8 +1,8 @@
 import { ComponentTreeCache, InstanceCache } from '../../util/caches';
 
-export default newTree => {
-  const component = ComponentTreeCache.get(newTree);
-  const instance = InstanceCache.get(component);
+export default vTree => {
+  const componentTree = ComponentTreeCache.get(vTree);
+  const instance = InstanceCache.get(componentTree);
 
   // Ensure this is a stateful component. Stateless components do not get
   // lifecycle events yet.

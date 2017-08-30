@@ -1,6 +1,7 @@
 const uppercaseEx = /[A-Z]/g;
 import { ComponentTreeCache } from '../util/caches';
 import componentDidMount from './lifecycle/component-did-mount';
+import componentWillUnmount from './lifecycle/component-will-unmount';
 
 export default transaction => {
   if (transaction.aborted) {
@@ -66,21 +67,7 @@ export default transaction => {
       }
 
       if (REMOVE_CHILD) {
-        for (let i = 0; i < REMOVE_CHILD.length; i += 1) {
-          const oldTree = REMOVE_CHILD[i];
-
-          if (typeof oldTree.rawNodeName !== 'function') {
-            continue;
-          }
-
-          const oldInstance = InstanceCache.has(oldTree);
-
-          componentDidUnmount(oldTree);
-
-          if (oldInstance) {
-            ComponentTreeCache.delete(oldInstance);
-            InstanceCache.delete(oldTree);
-          }
+        for (let i = 0; i < REMOVE_CHILD.length; i++) {
         }
       }
     });

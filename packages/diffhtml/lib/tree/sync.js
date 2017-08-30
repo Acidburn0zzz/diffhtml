@@ -100,7 +100,7 @@ export default function syncTree(oldTree, newTree, patches, parentTree, specialC
     return patches;
   }
 
-  // USED: INSERT_BEFORE: 3x, REMOVE_CHILD: 2x, REPLACE_CHILD: 3x.
+  // USED: INSERT_BEFORE: 3x, REMOVE_CHILD: 1x, REPLACE_CHILD: 3x.
   const { INSERT_BEFORE, REMOVE_CHILD, REPLACE_CHILD } = patchset;
   const isElement = newTree.nodeType === 1;
 

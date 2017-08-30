@@ -6,7 +6,7 @@ import validateCaches from './util/validate-caches';
 
 const { process } = Internals;
 
-describe('Component implementation', function() {
+describe.only('Component implementation', function() {
   beforeEach(() => {
     this.fixture = document.createElement('div');
     process.env.NODE_ENV = 'development';
@@ -17,7 +17,7 @@ describe('Component implementation', function() {
     validateCaches();
   });
 
-  it.only('can render a component', () => {
+  it('can render a component', () => {
     class CustomComponent extends Component {
       render() {
         return html`
@@ -68,7 +68,74 @@ describe('Component implementation', function() {
     equal(this.fixture.outerHTML, '<div><b>Hello world</b></div>');
   });
 
+  it('can have a series of HoC', () => {
+    class CustomComponent extends Component {
+      render({ message }) {
+        return html`${message}`;
+      }
+    }
+
+    const embolden = WrappedComponent => class EmboldenComponent {
+      render({ message }) {
+        return html`
+          <b><${WrappedComponent} message=${message} /></b>
+        `;
+      }
+    };
+
+    const spanify = WrappedComponent => class SpanifyComponent {
+      render({ message }) {
+        return html`
+          <span><${WrappedComponent} message=${message} /></span>
+        `;
+      }
+    };
+
+    const BoldAndSpanned = spanify(embolden(CustomComponent));
+
+    innerHTML(this.fixture, html`<${BoldAndSpanned} message="Hello world" />`);
+
+    equal(this.fixture.outerHTML, '<div><span><b>Hello world</b></span></div>');
+  });
+
   describe('Lifecycle', () => {
+    it('can map to componentDidMount', () => {
+      let wasCalled = false;
+
+      class CustomComponent extends Component {
+        render() {
+          return html`<div />`;
+        }
+
+        componentDidMount() {
+          wasCalled = true;
+        }
+      }
+
+      innerHTML(this.fixture, html`<${CustomComponent} someProp="true" />`);
+
+      ok(wasCalled);
+    });
+
+    it('can map to componentWillUnmount', () => {
+      let wasCalled = false;
+
+      class CustomComponent extends Component {
+        render() {
+          return html`<div />`;
+        }
+
+        componentWillUnmount() {
+          wasCalled = true;
+        }
+      }
+
+      innerHTML(this.fixture, html`<${CustomComponent} someProp="true" />`);
+      innerHTML(this.fixture, html``);
+
+      ok(wasCalled);
+    });
+
     it('can map to shouldComponentUpdate', () => {
       let wasCalled = false;
 
@@ -116,24 +183,6 @@ describe('Component implementation', function() {
       ok(wasCalled);
     });
 
-    it('can map to componentDidMount', () => {
-      let wasCalled = false;
-
-      class CustomComponent extends Component {
-        render() {
-          return html`<div />`;
-        }
-
-        componentDidMount() {
-          wasCalled = true;
-        }
-      }
-
-      innerHTML(this.fixture, html`<${CustomComponent} someProp="true" />`);
-
-      ok(wasCalled);
-    });
-
     it('can map to componentDidUpdate', () => {
       let wasCalled = false;
 
@@ -149,25 +198,6 @@ describe('Component implementation', function() {
 
       innerHTML(this.fixture, html`<${CustomComponent} someProp="true" />`);
       innerHTML(this.fixture, html`<${CustomComponent} someProp="false" />`);
-
-      ok(wasCalled);
-    });
-
-    it('can map to componentWillUnmount', () => {
-      let wasCalled = false;
-
-      class CustomComponent extends Component {
-        render() {
-          return html`<div />`;
-        }
-
-        componentWillUnmount() {
-          wasCalled = true;
-        }
-      }
-
-      innerHTML(this.fixture, html`<${CustomComponent} someProp="true" />`);
-      innerHTML(this.fixture, html``);
 
       ok(wasCalled);
     });

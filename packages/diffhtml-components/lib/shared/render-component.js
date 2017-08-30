@@ -37,17 +37,22 @@ export default function renderComponent(vTree, context = {}) {
     renderTree = Component(props, context)
   }
 
-  const childNodes = [].concat(renderTree);
-
   // Associate the children with the parent component that rendered them, this
   // is used to trigger lifecycle events.
-  for (let i = 0; i < childNodes.length; i++) {
-    const newTree = childNodes[i];
+  const linkTrees = childNodes => {
+    for (let i = 0; i < childNodes.length; i++) {
+      const newTree = childNodes[i];
 
-    if (newTree.nodeType !== 11) {
-      ComponentTreeCache.set(newTree, vTree);
+      if (newTree.nodeType !== 11) {
+        ComponentTreeCache.set(newTree, vTree);
+      }
+      else {
+        linkTrees(newTree.childNodes);
+      }
     }
-  }
+  };
+
+  linkTrees([].concat(renderTree));
 
   return renderTree;
 };

@@ -1,15 +1,10 @@
 import { InstanceCache, ComponentTreeCache } from '../util/caches';
 import renderComponent from './render-component';
+import componentWillUnmount from './lifecycle/component-will-unmount';
 
 const root = typeof window !== 'undefined' ? window : global;
 
-export const releaseHook = vTree => {
-  const root = ComponentTreeCache.get(vTree);
-  const instance = InstanceCache.get(vTree);
-
-  ComponentTreeCache.delete(vTree);
-  InstanceCache.delete(root);
-};
+export const releaseHook = vTree => componentWillUnmount(vTree);
 
 export const createNodeHook = vTree => {
   const { customElements } = root;
@@ -21,7 +16,7 @@ export const createNodeHook = vTree => {
   }
 };
 
-export const syncTreeHook = (oldTree, newTree, parentTree) => {
+export const syncTreeHook = (oldTree, newTree) => {
   if (typeof newTree.rawNodeName === 'function') {
     const oldComponentTree = ComponentTreeCache.get(oldTree);
 
